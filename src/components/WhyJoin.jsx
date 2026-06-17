@@ -6,7 +6,6 @@ import { Button } from "@heroui/react";
 import Link from "next/link";
 
 export default function WhyJoin() {
-
   const benefits = [
     {
       id: 1,
@@ -57,8 +56,8 @@ export default function WhyJoin() {
   };
 
   return (
-    <section className="relative w-full bg-[#07070a] pb-24 pt-10 overflow-hidden">
-
+    <section className="relative w-full bg-[#07070a] py-24 overflow-hidden">
+      
       <div className="absolute -top-12 right-1/4 -z-10 h-[400px] w-[400px] rounded-full bg-fuchsia-600/5 blur-[130px] pointer-events-none" />
       <div className="absolute -bottom-12 left-1/4 -z-10 h-[400px] w-[400px] rounded-full bg-violet-600/5 blur-[130px] pointer-events-none" />
 
@@ -105,6 +104,7 @@ export default function WhyJoin() {
               className="relative flex flex-col justify-between p-6 rounded-2xl border border-white/5 bg-[#0d0d14]/30 backdrop-blur-md hover:bg-[#12121c]/50 hover:border-violet-500/20 transition-all duration-300 group"
             >
               <div>
+
                 <div className="flex items-center justify-between mb-6">
                   <div className="p-3 rounded-xl bg-white/5 group-hover:bg-violet-500/10 group-hover:scale-110 transition-all duration-300">
                     {benefit.icon}

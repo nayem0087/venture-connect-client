@@ -1,5 +1,6 @@
 import Banner from "@/components/Banner";
 import Stats from "@/components/Stats";
+import SuccessStories from "@/components/SuccessStories";
 import WhyJoin from "@/components/WhyJoin";
 
 export default function Home() {
@@ -7,6 +8,7 @@ export default function Home() {
     <div className="bg-zinc-50 font-sans dark:bg-black">
       <Banner />
       <Stats />
+      <SuccessStories/>
       <WhyJoin/>
     </div>
   );
