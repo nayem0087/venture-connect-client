@@ -1,4 +1,5 @@
 import Banner from "@/components/Banner";
+import Protocol from "@/components/Protocol";
 import Stats from "@/components/Stats";
 import SuccessStories from "@/components/SuccessStories";
 import WhyJoin from "@/components/WhyJoin";
@@ -10,6 +11,7 @@ export default function Home() {
       <Stats />
       <SuccessStories/>
       <WhyJoin/>
+      <Protocol/>
     </div>
   );
 }
