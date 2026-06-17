@@ -35,7 +35,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-[85vh] w-full overflow-hidden bg-[#07070a] flex items-center justify-center py-20">
+    <section className="relative min-h-[85vh] w-full overflow-hidden bg-[#07070a] flex items-center justify-center pt-20 pb-16">
 
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25 mix-blend-screen pointer-events-none"
@@ -145,7 +145,6 @@ export default function Hero() {
 
           </div>
         </motion.div>
-
       </motion.div>
     </section>
   );

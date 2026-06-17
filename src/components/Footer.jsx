@@ -48,7 +48,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* কলাম ২: Quick Links (২ ভাগ) */}
           <div className="lg:col-span-2 space-y-4">
             <h4 className="text-sm font-semibold text-white tracking-wider uppercase">
               Quick Links
@@ -72,7 +71,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* কলাম ৩: For Founders (৩ ভাগ) */}
           <div className="lg:col-span-3 space-y-4">
             <h4 className="text-sm font-semibold text-white tracking-wider uppercase">
               For Founders
@@ -93,7 +91,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* কলাম ৪: Contact Us (৩ ভাগ) */}
           <div className="lg:col-span-3 space-y-4">
             <h4 className="text-sm font-semibold text-white tracking-wider uppercase">
               Contact Us
