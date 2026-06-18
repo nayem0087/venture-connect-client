@@ -1,14 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button, Link } from "@heroui/react"; 
+import { Button, Label, Link } from "@heroui/react";
 import { CircleLetterG, Eye, EyeSlash, Person, Envelope, Lock, Picture, Star } from "@gravity-ui/icons";
 import toast, { Toaster } from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
+import { Radio, RadioGroup } from "@heroui/react";
 
 export default function SignupPage() {
     // States
-    const [role, setRole] = useState("collaborator"); 
+    const [role, setRole] = useState("collaborator");
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -47,7 +48,8 @@ export default function SignupPage() {
                 password,
                 name: fullName,
                 image: profileImage || undefined,
-                data: { role },
+                role,
+                callbackURL: "/",
             });
 
             if (error) {
@@ -96,10 +98,10 @@ export default function SignupPage() {
                 <div className="flex flex-col items-center text-center">
                     <div className="flex items-center gap-2.5">
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500 text-xl font-bold shadow-lg shadow-violet-600/20">
-                           <Star/>
+                            <Star />
                         </div>
                         <h1 className="text-2xl font-bold tracking-tight text-white">
-                            Startup<span className="text-violet-500">Forge</span>
+                            Venture<span className="text-violet-500">Connect</span>
                         </h1>
                     </div>
                     <h2 className="mt-6 text-3xl font-bold tracking-tight text-white">Create your account</h2>
@@ -129,32 +131,26 @@ export default function SignupPage() {
                 <form onSubmit={handleSignup} className="space-y-5">
 
                     {/* Role Selection Switcher */}
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-400">I am a...</label>
-                        <div className="grid grid-cols-2 gap-3">
-                            <button
-                                type="button"
-                                onClick={() => setRole("founder")}
-                                className={`h-12 rounded-xl border font-medium transition-all duration-200 text-sm flex items-center justify-center ${
-                                    role === "founder"
-                                        ? "border-violet-500 bg-violet-500/10 text-violet-400 shadow-lg shadow-violet-500/5"
-                                        : "border-white/5 bg-white/5 text-gray-400 hover:bg-white/10"
-                                }`}
-                            >
-                                Founder
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setRole("collaborator")}
-                                className={`h-12 rounded-xl border font-medium transition-all duration-200 text-sm flex items-center justify-center gap-2 ${
-                                    role === "collaborator"
-                                        ? "border-violet-500 bg-violet-500/10 text-violet-400 shadow-lg shadow-violet-500/5"
-                                        : "border-white/5 bg-white/5 text-gray-400 hover:bg-white/10"
-                                }`}
-                            >
-                                {role === "collaborator" && <span className="text-xs">✓</span>} Collaborator
-                            </button>
-                        </div>
+                    <div className="flex flex-col gap-4">
+                        <Label>Subscription plan</Label>
+                        <RadioGroup defaultValue="collaborator" name="role" onChange={value => setRole(value)} orientation="horizontal">
+                            <Radio value="collaborator">
+                                <Radio.Content>
+                                    <Radio.Control>
+                                        <Radio.Indicator />
+                                    </Radio.Control>
+                                    Collaborator
+                                </Radio.Content>
+                            </Radio>
+                            <Radio value="founder">
+                                <Radio.Content>
+                                    <Radio.Control>
+                                        <Radio.Indicator />
+                                    </Radio.Control>
+                                    Founder
+                                </Radio.Content>
+                            </Radio>
+                        </RadioGroup>
                     </div>
 
                     {/* Full Name */}
@@ -224,9 +220,9 @@ export default function SignupPage() {
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="w-full bg-transparent outline-none border-none text-white placeholder:text-gray-600 text-sm pl-1"
                             />
-                            <button 
-                                className="focus:outline-none p-1 rounded-lg hover:bg-white/5 transition-colors flex items-center justify-center" 
-                                type="button" 
+                            <button
+                                className="focus:outline-none p-1 rounded-lg hover:bg-white/5 transition-colors flex items-center justify-center"
+                                type="button"
                                 onClick={toggleVisibility}
                             >
                                 {isVisible ? (

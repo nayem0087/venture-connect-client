@@ -74,7 +74,7 @@ export default function SignInPage() {
                            <Star/>
                         </div>
                         <h1 className="text-2xl font-bold tracking-tight text-white">
-                            Startup<span className="text-violet-500">Forge</span>
+                            Venture<span className="text-violet-500">Connect</span>
                         </h1>
                     </div>
                     <h2 className="mt-6 text-3xl font-bold tracking-tight text-white">Welcome back</h2>
