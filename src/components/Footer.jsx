@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Envelope, Handset,Star, LogoFacebook, LogoGithub, LogoLinkedin, MapPin } from "@gravity-ui/icons";
+import { Envelope, Handset, Star, LogoFacebook, LogoGithub, LogoLinkedin, MapPin } from "@gravity-ui/icons";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -9,14 +9,14 @@ export default function Footer() {
   return (
     <footer className="w-full bg-[#07070a] text-gray-400 border-t border-white/10 pt-16 pb-8">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 pb-12">
-          
+
           <div className="lg:col-span-4 space-y-5">
             <Link href="/" className="flex items-center gap-2">
               <div className="flex md:h-12 h-8 md:w-12 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-500 shadow-md">
-                <span className="text-base font-black text-white tracking-wider"><Star/></span>    
-              </div>     
+                <span className="text-base font-black text-white tracking-wider"><Star /></span>
+              </div>
               <span className="md:text-4xl text-2xl font-bold text-white tracking-tight">
                 Venture<span className="text-violet-400">Connect</span>
               </span>
@@ -26,21 +26,27 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-4 pt-6">
               <Link
-                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://www.facebook.com/share/v/1BS7PC4kGk/"
                 className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 transition hover:bg-violet-600"
               >
                 <LogoFacebook className="h-5 w-5" />
               </Link>
 
               <Link
-                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://github.com/nayem0087"
                 className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 transition hover:bg-violet-600"
               >
                 <LogoGithub className="h-5 w-5" />
               </Link>
 
               <Link
-                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://www.linkedin.com/in/nayem-ahmmed"
                 className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 transition hover:bg-violet-600"
               >
                 <LogoLinkedin className="h-5 w-5" />
@@ -118,7 +124,7 @@ export default function Footer() {
 
         <div className="border-t border-white/5 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
           <p>© {currentYear} VentureConnect. All rights reserved.</p>
-          
+
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="hover:text-gray-300 transition duration-200">
               Privacy Policy

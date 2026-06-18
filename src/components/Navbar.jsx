@@ -6,9 +6,9 @@ import {Star} from '@gravity-ui/icons';
 
 export default function Navbar() {
   const navLinks = [
-    { label: "Browse Jobs", href: "/jobs" },
-    { label: "Company", href: "/company" },
-    { label: "Pricing", href: "/pricing" },
+    { label: "Home", href: "/" },
+    { label: "Browse Startups", href: "/browse-startups" },
+    { label: "Browse Opportunities", href: "/browse-opportunities" },
   ];
 
   return (
