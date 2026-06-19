@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Button } from "@heroui/react";
+import { Button, Spinner } from "@heroui/react";
 import { Star } from '@gravity-ui/icons';
 import { signOut, useSession } from "@/lib/auth-client";
 
@@ -11,7 +11,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: session, isPending } = useSession();
   console.log('session', session, 'is pending, isPending');
-  
+
   const user = session?.user;
 
   const handleSignOut = async () => {
@@ -29,7 +29,7 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#0B0B0F]/80 backdrop-blur-xl">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        
+
         {/* LOGO */}
         <Link href="/" className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-500 shadow-lg shadow-violet-600/20">
@@ -45,7 +45,7 @@ export default function Navbar() {
         {/* RIGHT SIDE (DESKTOP) */}
         <div className="flex items-center gap-4">
           <div className="hidden items-center gap-6 md:flex">
-            
+
             {/* Nav Links Container */}
             <ul className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-2">
               {navLinks.map((link) => (
@@ -66,15 +66,18 @@ export default function Navbar() {
             {/* Desktop Authentication Mapping Pipeline */}
             <div className="flex items-center gap-4">
               {isPending ? (
-                <span className="text-sm text-gray-500 animate-pulse">Loading...</span>
+                <div className="flex  items-center justify-center min-h-screen">
+                  <Spinner />
+                </div>
+
               ) : user ? (
                 <>
                   <span className="text-sm font-medium text-gray-300">
                     Hi, <span className="text-violet-400">{user.name ? user.name.split(" ")[0] : "User"}</span>!
                   </span>
-                  <Button 
+                  <Button
                     onClick={handleSignOut}
-                    variant="flat" 
+                    variant="flat"
                     size="sm"
                     className="border border-white/10 bg-white/5 text-white hover:bg-white/10 rounded-xl text-xs font-semibold"
                   >
@@ -126,7 +129,7 @@ export default function Navbar() {
       {isMenuOpen && (
         <div className="border-t border-white/10 bg-[#0B0B0F] md:hidden animate-in fade-in slide-in-from-top-5 duration-200">
           <div className="space-y-3 px-4 py-6">
-            
+
             {/* Nav Menu Lists */}
             <ul className="space-y-2">
               {navLinks.map((link) => (
