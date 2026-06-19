@@ -45,12 +45,13 @@ export default function MyStartupPage() {
     });
   };
 
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setProfileImage(reader.result); // বানান ঠিক করা হয়েছে
+        setProfileImage(reader.result); 
       };
       reader.readAsDataURL(file);
     }
@@ -99,14 +100,14 @@ export default function MyStartupPage() {
                 <div className="space-y-1.5 pt-4">
                   <Label>Profile Image</Label>
                   <div className="flex items-center gap-3 pt-2">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 border overflow-hidden">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-800 border overflow-hidden">
                       {profileImage ? (
                         <img src={profileImage} alt="Preview" className="h-full w-full object-cover" />
                       ) : (
                         <Picture className="text-gray-400 min-h-5 min-w-5" />
                       )}
                     </div>
-                    <label className="flex h-12 w-full cursor-pointer items-center justify-center rounded-xl border px-4 font-medium text-purple-600 hover:bg-gray-50 transition text-sm">
+                    <label className="flex h-12 w-full cursor-pointer items-center justify-center rounded-xl border px-4 font-medium text-purple-600 hover:bg-gray-800 transition text-sm">
                       Upload Logo
                       <input type="file" name="logo" accept="image/*" className="hidden" onChange={handleImageChange} />
                     </label>
