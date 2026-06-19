@@ -18,7 +18,7 @@ export default function Footer() {
                 <span className="text-base font-black text-white tracking-wider"><Star /></span>
               </div>
               <span className="md:text-4xl text-2xl font-bold text-white tracking-tight">
-                Venture<span className="text-violet-400">Connect</span>
+                Venture<span className="text-purple-500">Connect</span>
               </span>
             </Link>
             <p className="text-sm text-gray-400/80 leading-relaxed max-w-sm">

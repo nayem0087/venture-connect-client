@@ -37,7 +37,7 @@ export default function Navbar() {
           </div>
           <div className="hidden leading-none sm:block">
             <h1 className="text-3xl font-bold text-white">
-              Venture<span className="text-violet-500">Connect</span>
+              Venture<span className="text-purple-500">Connect</span>
             </h1>
           </div>
         </Link>
