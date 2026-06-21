@@ -1,160 +1,104 @@
 "use client";
 
-import { 
-  Card, Button, Input, TextArea, 
-  Select, Label, ListBox 
+import React, { useState } from "react";
+import {
+    Form,
+    TextField,
+    TextArea,
+    Button,
+    Label,
+    Input,
+    Card,
+    Select,
+    ListBox,
+    toast
 } from "@heroui/react";
-import { Picture } from "@gravity-ui/icons";
-import { useState } from "react";
+import { createStartup } from "@/lib/actions/startups";
+import { redirect } from "next/navigation";
+
 
 export default function MyStartupPage() {
-  const [startup, setStartup] = useState(null);
-  const [profileImage, setProfileImage] = useState(null);
+    
+  const handleSubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const data = Object.fromEntries(formData.entries());
 
-  const handleCreate = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const file = formData.get("logo");
+        
+        const startup = {
+            name: formData.get("name"),
+            industry: formData.get("industry"),
+            funding: formData.get("funding"),
+            email: formData.get("email"),
+            description: formData.get("description"),
+        };
 
-    let logoUrl = profileImage; 
-    if (file && file.size > 0) {
-      const imgbbFormData = new FormData();
-      imgbbFormData.append("image", file);
-      
-      try {
-        const res = await fetch(`https://api.imgbb.com/1/upload?key=YOUR_IMGBB_API_KEY`, {
-          method: "POST",
-          body: imgbbFormData,
-        });
-        const result = await res.json();
-        if (result.success) {
-          logoUrl = result.data.url;
+        console.log('new', startup);
+
+        // Server action কল করুন
+        const res = await createStartup(startup);
+        if (res.insertedId) {
+            toast.success("Job posted successfully!");
+            e.target.reset();
+            redirect("/dashboard/founder");
         }
-      } catch (error) {
-        console.error("Image upload failed", error);
-      }
-    }
+    };
 
-    setStartup({
-      name: formData.get("name"),
-      logo: logoUrl,
-      industry: formData.get("industry"),
-      funding: formData.get("funding"),
-      description: formData.get("description"),
-      email: formData.get("email"),
-    });
-  };
+    return (
+        <div className="min-h-screen bg-[#0d0d0e] text-white py-12 px-4">
+            <div className="max-w-2xl mx-auto">
+                <h1 className="text-2xl font-semibold mb-1">My Startup</h1>
+                <p className="text-zinc-400 text-sm mb-8">Manage your startup profile.</p>
 
+                    <Card className="bg-[#121214] border border-zinc-900 p-8">
+                        <Form onSubmit={handleSubmit} className="space-y-6">
+                            <TextField name="name" className="flex flex-col gap-1">
+                                <Label className="text-zinc-400 text-sm">Startup Name</Label>
+                                <Input placeholder="e.g. TechNova" className="bg-[#1c1c1e] h-12 rounded-lg px-3" required />
+                            </TextField>
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result); 
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+                            <div className="grid grid-cols-2 gap-4">
+                                <Select name="industry" className="w-full">
+                                    <Label className="text-zinc-400 text-sm">Industry</Label>
+                                    <Select.Trigger className="bg-[#1c1c1e] h-12 rounded-lg px-3"><Select.Value /></Select.Trigger>
+                                    <Select.Popover className="bg-[#1c1c1e] p-2 border border-zinc-800 rounded-lg">
+                                        <ListBox>
+                                            <ListBox.Item id="tech">Technology</ListBox.Item>
+                                            <ListBox.Item id="fintech">Fintech</ListBox.Item>
+                                        </ListBox>
+                                    </Select.Popover>
+                                </Select>
 
-  return (
-    <div className="p-10 min-h-screen">
-      <div className="max-w-xl mx-auto">
-        <h1 className="text-2xl font-bold mb-1">My Startup</h1>
-        <p className="text-gray-500 mb-6">Create and manage your startup profile.</p>
+                                <Select name="funding" className="w-full">
+                                    <Label className="text-zinc-400 text-sm">Funding Stage</Label>
+                                    <Select.Trigger className="bg-[#1c1c1e] h-12 rounded-lg px-3"><Select.Value /></Select.Trigger>
+                                    <Select.Popover className="bg-[#1c1c1e] p-2 border border-zinc-800 rounded-lg">
+                                        <ListBox>
+                                            <ListBox.Item id="seed">Seed</ListBox.Item>
+                                            <ListBox.Item id="series-a">Series A</ListBox.Item>
+                                        </ListBox>
+                                    </Select.Popover>
+                                </Select>
+                            </div>
 
-        {startup ? (
-          // View Mode (Profile)
-          <Card>
-           <Card.Header className="flex gap-4 p-6">
-      {/* <img> ট্যাগ ব্যবহার করুন */}
-      <img src={startup.logo} className="w-16 h-16 rounded-xl object-cover" alt="logo" />
-      <div className="flex flex-col">
-        <Card.Title className="text-2xl font-bold">{startup.name}</Card.Title>
-                <div className="flex gap-2 mt-1">
-                  <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">{startup.industry}</span>
-                  <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">{startup.funding}</span>
-                </div>
-              </div>
-            </Card.Header>
-            <Card.Content className="px-6 pb-6 text-gray-600">
-              {startup.description}
-            </Card.Content>
-            <Card.Footer className="flex justify-end gap-2 p-6 border-t">
-              <Button variant="flat" onPress={() => setStartup(null)}>Delete</Button>
-              <Button color="primary">Edit</Button>
-            </Card.Footer>
-          </Card>
-        ) : (
-          // Create Mode (Form)
-          <Card>
-            <Card.Header className="p-6 border-b">
-              <Card.Title className="text-2xl font-semibold">+ Create Startup</Card.Title>
-            </Card.Header>
-            <Card.Content className="p-6">
-              <form onSubmit={handleCreate} className="flex flex-col">
-                    <Label className="pb-2">Startup Name</Label>
-                    <Input name="name" label="Startup Name *" placeholder="e.g. TechNova" required />
-                
-                {/* Profile Image Section */}
-                <div className="space-y-1.5 pt-4">
-                  <Label>Profile Image</Label>
-                  <div className="flex items-center gap-3 pt-2">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-800 border overflow-hidden">
-                      {profileImage ? (
-                        <img src={profileImage} alt="Preview" className="h-full w-full object-cover" />
-                      ) : (
-                        <Picture className="text-gray-400 min-h-5 min-w-5" />
-                      )}
-                    </div>
-                    <label className="flex h-12 w-full cursor-pointer items-center justify-center rounded-xl border px-4 font-medium text-purple-600 hover:bg-gray-800 transition text-sm">
-                      Upload Logo
-                      <input type="file" name="logo" accept="image/*" className="hidden" onChange={handleImageChange} />
-                    </label>
-                  </div>
-                </div>
-               
-                    
-                <div className="grid grid-cols-2 gap-4 mt-4 space-y-4">
-                  <Select name="industry">
-                    <Label className="pb-2">Industry *</Label>
-                    <Select.Trigger><Select.Value placeholder="Select industry" /></Select.Trigger>
-                    <Select.Popover>
-                      <ListBox>
-                        <ListBox.Item key="tech"><Label>Technology</Label></ListBox.Item>
-                        <ListBox.Item key="fintech"><Label>Fintech</Label></ListBox.Item>
-                      </ListBox>
-                    </Select.Popover>
-                  </Select>
+                            <TextField name="email" className="flex flex-col gap-1">
+                                <Label className="text-zinc-400 text-sm">Founder Email</Label>
+                                <Input type="email" className="bg-[#1c1c1e] h-12 rounded-lg px-3" required />
+                            </TextField>
 
-                  <Select name="funding">
-                    <Label className="pb-2">Funding Stage *</Label>
-                    <Select.Trigger><Select.Value placeholder="Select stage" /></Select.Trigger>
-                    <Select.Popover>
-                      <ListBox>
-                        <ListBox.Item key="seed"><Label>Seed</Label></ListBox.Item>
-                        <ListBox.Item key="series-a"><Label>Series A</Label></ListBox.Item>
-                      </ListBox>
-                    </Select.Popover>
-                  </Select>
-                </div>
-                
-                <Label className="pb-2">Enter your Email</Label>
-                <Input name="email" label="Founder Email *" type="email" placeholder="example@mail.com" required />
-                <Label className="pb-2 mt-4">Description</Label>
-                <TextArea name="description" label="Description *" placeholder="Describe your mission..." required />
-                
-                <Button type="submit" className={'bg-purple-600 mt-6 w-full'} size="lg">
-                  Create Startup
-                </Button>
-              </form>
-            </Card.Content>
-            <Card.Footer />
-          </Card>
-        )}
-      </div>
-    </div>
-  );
+                            <TextField name="description" className="flex flex-col gap-1">
+                                <Label className="text-zinc-400 text-sm">Description</Label>
+                                <TextArea placeholder="Describe your mission..." className="bg-[#1c1c1e] p-3 rounded-lg" required />
+                            </TextField>
+
+                            <Button type="submit" className="w-full h-12 bg-white text-black font-semibold rounded-lg hover:bg-zinc-200">
+                                Create Startup
+                            </Button>
+                        </Form>
+                    </Card>
+            </div>
+        </div>
+    );
 }
 
 
