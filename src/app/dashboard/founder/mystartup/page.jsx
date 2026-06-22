@@ -13,7 +13,7 @@ import {
     Card
 } from "@heroui/react";
 import { ArrowUpToLine, Globe, Factory, ArrowRight, Pencil, ChevronDown, TrashBin } from "@gravity-ui/icons";
-import { toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";     
 import Loading from "@/components/Loading";
 
 import { getAllStartups } from "@/lib/api/startup";
@@ -35,6 +35,10 @@ export default function MyStartupPage() {
     const [previewImage, setPreviewImage] = useState("");
     const [isPending, startTransition] = useTransition();
 
+    // 🌐 ImgBB Upload States
+    const [logoUrl, setLogoUrl] = useState('');
+    const [isUploading, setIsUploading] = useState(false);
+
     const fetchStartups = async () => {
         try {
             setLoading(true);
@@ -54,10 +58,44 @@ export default function MyStartupPage() {
         fetchStartups();
     }, []);
 
-    const handleImageChange = (e) => {
+    // 📸 ImgBB Client side Logo Upload Handler
+    const handleImageChange = async (e) => {
         const file = e.target.files[0];
-        if (file) {
-            setPreviewImage(URL.createObjectURL(file));
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error("File size exceeds 5MB limit");
+            return;
+        }
+
+        setPreviewImage(URL.createObjectURL(file));
+
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const IMGBB_API_KEY = process.env.NEXT_PUBLIC_IMAGE_UPLOAD_API; 
+            if (!IMGBB_API_KEY) {
+                throw new Error("ImgBB API key is missing in environment variables.");
+            }
+
+            const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                setLogoUrl(data.data.url);
+                toast.success("Logo uploaded successfully!");
+            } else {
+                toast.error("ImgBB upload failed. Try again.");
+            }
+        } catch (err) {
+            console.error("Upload Error:", err);
+            toast.error("Network error during logo upload");
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -66,33 +104,50 @@ export default function MyStartupPage() {
         const formData = new FormData(e.currentTarget);
         
         startTransition(async () => {
-            if (selectedStartup?._id) {
-                formData.append("oldLogo", selectedStartup?.logo || "");
-                const res = await updateStartup(selectedStartup._id, formData);
-                
-                if (res.success) {
-                    toast.success("Startup updated successfully!");
-                    setIsEditing(false);
-                    setSelectedStartup(null);
-                    fetchStartups(); 
-                } else {
-                    toast.error(res.error || "Something went wrong!");
-                }
+    if (selectedStartup?._id) {
+        
+        const industryValue = formData.get("industry");
+        const fundingValue = formData.get("funding");
+
+        const updateData = {
+            name: formData.get("name") ? String(formData.get("name")) : "",
+            industry: industryValue ? String(industryValue) : "tech",
+            funding: fundingValue ? String(fundingValue) : "seed",
+            email: formData.get("email") ? String(formData.get("email")) : "",
+            logo: logoUrl || selectedStartup?.logo || "", 
+            description: formData.get("description") ? String(formData.get("description")) : ""
+        };
+
+        console.log("from frontend to backend data :", updateData);
+
+        const res = await updateStartup(selectedStartup._id, updateData);
+        
+        if (res.success) {
+            toast.success("Startup updated successfully!");
+            setIsEditing(false);
+            setSelectedStartup(null);
+            setLogoUrl(''); 
+            fetchStartups(); 
+        } else {
+            toast.error(res.error || "Something went wrong!");
+        }
             } else {
-                // ➕ 
                 const newStartupObj = {
                     name: formData.get("name"),
                     industry: formData.get("industry") || "tech",
                     funding: formData.get("funding") || "seed",
                     email: formData.get("email"),
                     description: formData.get("description"),
+                    logo: logoUrl || "", 
                     status: "pending",
                 };
+                console.log('new startup obj', newStartupObj);
 
                 const res = await createStartup(newStartupObj);
                 if (res.insertedId) {
                     toast.success("Startup registered successfully!");
                     setIsEditing(false);
+                    setLogoUrl('');
                     fetchStartups(); 
                 } else {
                     toast.error("Failed to create startup.");
@@ -104,12 +159,14 @@ export default function MyStartupPage() {
     const startRegistration = () => {
         setSelectedStartup(null);
         setPreviewImage("");
+        setLogoUrl('');
         setIsEditing(true);
     };
 
     const startEditing = (startupItem) => {
         setSelectedStartup(startupItem);
         setPreviewImage(startupItem.logo || "");
+        setLogoUrl(startupItem.logo || "");
         setIsEditing(true);
     };
 
@@ -133,7 +190,7 @@ export default function MyStartupPage() {
                         onPress={startRegistration}
                         className="bg-white text-black font-semibold hover:bg-zinc-200 rounded-lg px-6 h-11 transition-all inline-flex items-center"
                     >
-                        Register Startup <ArrowRight size={16} className="ml-1" />
+                        Create Startup <ArrowRight size={16} className="ml-1" />
                     </Button>
                 </div>
             </div>
@@ -263,13 +320,14 @@ export default function MyStartupPage() {
                                         No Logo
                                     </div>
                                 )}
-                                <label className="cursor-pointer bg-purple-700 hover:bg-purple-800 text-white text-xs font-semibold py-2 px-4 rounded-lg transition inline-flex items-center gap-1">
-                                    <ArrowUpToLine size={14} /> Change Logo
+                                <label className={`cursor-pointer bg-purple-700 hover:bg-purple-800 text-white text-xs font-semibold py-2 px-4 rounded-lg transition inline-flex items-center gap-1 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                                    <ArrowUpToLine size={14} /> {isUploading ? "Uploading..." : "Update Logo"}
                                     <input 
                                         type="file" 
                                         name="logo" 
                                         accept="image/*" 
                                         className="hidden" 
+                                        disabled={isUploading}
                                         onChange={handleImageChange}
                                     />
                                 </label>
@@ -341,6 +399,7 @@ export default function MyStartupPage() {
                                 onClick={() => {
                                     setIsEditing(false);
                                     setSelectedStartup(null);
+                                    setLogoUrl('');
                                 }} 
                                 className="w-1/2 h-12 bg-zinc-800 text-white font-semibold rounded-lg hover:bg-zinc-700 transition-colors"
                             >
@@ -348,7 +407,7 @@ export default function MyStartupPage() {
                             </Button>
                             <Button 
                                 type="submit" 
-                                isDisabled={isPending}
+                                isDisabled={isPending || isUploading}
                                 className="w-1/2 h-12 bg-purple-700 font-semibold text-white rounded-lg hover:bg-purple-800 transition-colors"
                             >
                                 {isPending ? "Saving..." : selectedStartup ? "Save Changes" : "Create Startup"}
@@ -360,60 +419,3 @@ export default function MyStartupPage() {
         </div>
     );
 }
-
-
-// import { getAllStartups } from '@/lib/api/startup';
-
-
-// const MyStartupPage = async () => {
-//   const startups = await getAllStartups();
-
-//   return (
-//     <div className="p-4 md:p-10 min-h-screen w-full text-white">
-//       <div className="max-w-4xl mx-auto">
-//         <h2 className="text-3xl font-bold">My Startups</h2>
-//         <p className='text-gray-500 mt-1 mb-6'>View your startup application.</p>
-        
-//         <div className="grid grid-cols-1 gap-6">
-//           {startups.map((startup) => (
-//             <div 
-//               key={startup._id} 
-//               className="bg-gray-900 border border-gray-800 rounded-2xl p-5 shadow-xl hover:border-gray-700 transition-all"
-//             >
-//               {/* Header: Logo, Title, and Action Buttons (Responsive) */}
-//               <div className="flex items-start justify-center gap-6 mb-4">
-//                 {/* Logo */}
-//                 <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex-shrink-0" />
-                
-//                 <div className="flex-1 min-w-0">
-//                   <h3 className="text-xl md:text-2xl font-bold truncate">{startup.name}</h3>
-//                   <div className="flex flex-wrap md:gap-6 gap-4 mt-2">
-//                     <span className="bg-gray-800 text-gray-300 px-2 py-0.5 rounded-full text-[10px] md:text-xs font-medium">{startup.industry}</span>
-//                     <span className="bg-gray-800 text-gray-300 px-2 py-0.5 rounded-full text-[10px] md:text-xs font-medium">{startup.funding}</span>
-//                     <span className="bg-green-900/30 text-green-400 px-2 py-0.5 rounded-full text-[10px] md:text-xs font-medium border text-center border-green-800">{startup.status}</span>
-//                   </div>
-//                 </div>
-//               </div>
-
-//               {/* Description */}
-//               <p className="text-gray-400 text-sm leading-relaxed mb-4">
-//                 {startup.description}
-//               </p>
-
-//               <div className="flex gap-2 w-full pt-4 border-t border-gray-800">
-//                 <button className="flex-1 bg-gray-800 hover:bg-green-800 text-white py-2 rounded-lg text-sm font-semibold transition">
-//                   Edit
-//                 </button>
-//                 <button className="flex-1 bg-red-900/20 hover:bg-red-900/40 text-red-400 py-2 rounded-lg text-sm font-semibold transition">
-//                   Delete
-//                 </button>
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default MyStartupPage;
