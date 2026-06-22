@@ -25,7 +25,7 @@ export default function FounderDashboardHomePage() {
     return (
         <div>
             <h2 className="text-white text-3xl font-bold pt-6 pl-6">Welcome, <span className="text-purple-500">{session?.user?.name}</span>!</h2>
-            <div className="bg-black min-h-screen p-10 flex gap-6">
+            <div className="min-h-screen p-10 flex gap-6">
                 {statsData.map((item, index) => (
                     <StatsCard
                         key={index}
