@@ -10,7 +10,7 @@ export function DashboardSidebar() {
         { icon: Briefcase, href: '/dashboard/founder/mystartup', label: "My Startup" },
         { icon: CirclePlus, href: '/dashboard/founder/mystartup/new', label: "Add Opportunity" },
         { icon: WeightHanging, href: '/dashboard/founder/mystartup/new/opportunities', label: "Manage Opportunities" },
-        { icon: LogoTelegram, href: '/', label: "Applications" },
+        { icon: LogoTelegram, href: '/dashboard/founder/mystartup/new/applications', label: "Applications" },
     ];
 
     const navContent = <nav className="flex flex-col gap-1">

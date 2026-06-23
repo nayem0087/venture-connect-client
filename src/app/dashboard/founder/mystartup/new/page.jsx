@@ -10,14 +10,12 @@ import {
     Input,
     Card,
     Select,
-    ListBox,
-    toast,
-    Table
+    ListBox
 } from "@heroui/react";
+import { toast } from "react-hot-toast"; // আপনার প্রজেক্ট অনুযায়ী react-hot-toast ব্যবহার করা হয়েছে
 import { redirect } from "next/navigation";
 import Loading from "@/components/Loading";
 import { createOpportunities } from "@/lib/actions/opportunities";
-
 
 export default function CreateOpportunitiesPage() {
     const [isLoading, setIsLoading] = useState(true);
@@ -34,11 +32,10 @@ export default function CreateOpportunitiesPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
-        const data = Object.fromEntries(formData.entries());
-
 
         const opportunities = {
             title: formData.get("title") ? String(formData.get("title")) : "",
+            email: formData.get("email") ? String(formData.get("email")) : "", // নতুন ইমেইল ফিল্ড
             skills: formData.get("skills") ? String(formData.get("skills")) : "",
             workType: formData.get("workType") ? String(formData.get("workType")) : "",
             commitment: formData.get("commitment") ? String(formData.get("commitment")) : "",
@@ -63,7 +60,7 @@ export default function CreateOpportunitiesPage() {
                 <p className="text-zinc-400 text-sm mb-8">Create your opportunities application.</p>
 
                 <Card className="bg-[#121214] border border-zinc-900 p-8 max-w-2xl mx-auto">
-              
+                    
                     <div className="mb-6">
                         <h2 className="text-xl font-bold text-white">Add Opportunity</h2>
                         <p className="text-zinc-500 text-xs mt-1">
@@ -82,7 +79,18 @@ export default function CreateOpportunitiesPage() {
                             />
                         </TextField>
 
-                        {/* ২. Required Skills */}
+                        {/* ২. Contact/Founder Email (নতুন যুক্ত করা হয়েছে) */}
+                        <TextField name="email" className="flex flex-col gap-1">
+                            <Label className="text-zinc-400 text-sm">Contact Email *</Label>
+                            <Input
+                                type="email"
+                                placeholder="e.g. founder@startup.com"
+                                className="bg-[#1c1c1e] text-white h-12 rounded-lg px-3 outline-none border border-zinc-800/50 focus:border-purple-600 transition"
+                                required
+                            />
+                        </TextField>
+
+                        {/* ৩. Required Skills */}
                         <TextField name="skills" className="flex flex-col gap-1">
                             <Label className="text-zinc-400 text-sm">Required Skills * <span className="text-zinc-500 text-xs">(comma-separated)</span></Label>
                             <Input
@@ -92,7 +100,6 @@ export default function CreateOpportunitiesPage() {
                             />
                         </TextField>
 
-                     
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {/* Work Type */}
                             <Select name="workType" className="w-full">

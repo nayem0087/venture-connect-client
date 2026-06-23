@@ -37,3 +37,28 @@ export async function deleteOpportunity(id) {
         return { success: false, message: "Failed to delete opportunity" };
     }
 }
+
+// Fetch all applications
+export async function getAllApplications() {
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/jobs-applications`, { cache: 'no-store' });
+        return await res.json();
+    } catch (error) {
+        console.error("Action Error:", error);
+        return { success: false, data: [] };
+    }
+}
+
+// Update application status
+export async function updateApplicationStatus(id, status) {
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/jobs-applications/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status })
+        });
+        return await res.json();
+    } catch (error) {
+        return { success: false, message: "Failed to update status" };
+    }
+}

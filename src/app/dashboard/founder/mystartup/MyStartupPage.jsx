@@ -107,11 +107,11 @@ export default function MyStartupPage({ founder }) {
         
         startTransition(async () => {
             if (selectedStartup?._id) {
-                // 💡 সেভ চেঞ্জেস বা আপডেট লজিক
+  
                 const updateData = {
                     name: formData.get("name") ? String(formData.get("name")) : "",
-                    industry: String(selectedIndustry), // স্টেট থেকে সুনির্দিষ্ট ভ্যালু নেওয়া হচ্ছে
-                    funding: String(selectedFunding),   // স্টেট থেকে সুনির্দিষ্ট ভ্যালু নেওয়া হচ্ছে
+                    industry: String(selectedIndustry), 
+                    funding: String(selectedFunding), 
                     email: formData.get("email") ? String(formData.get("email")) : "",
                     logo: logoUrl || selectedStartup?.logo || "", 
                     description: formData.get("description") ? String(formData.get("description")) : ""
@@ -131,7 +131,7 @@ export default function MyStartupPage({ founder }) {
                     toast.error(res?.error || "Something went wrong during update!");
                 }
             } else {
-                // 💡 নতুন স্টার্টআপ রেজিস্ট্রেশন লজিক
+               
                 const newStartupObj = {
                     name: formData.get("name") ? String(formData.get("name")) : "",
                     industry: String(selectedIndustry),
@@ -338,7 +338,7 @@ export default function MyStartupPage({ founder }) {
 
                         {/* Industry & Funding Select Options */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {/* 💡 HeroUI Select নিয়ন্ত্রিত করা হয়েছে onSelectionChange এর মাধ্যমে */}
+                            
                             <Select 
                                 name="industry" 
                                 className={selectBoxClass}
