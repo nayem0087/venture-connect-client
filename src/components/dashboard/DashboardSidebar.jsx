@@ -9,7 +9,7 @@ export function DashboardSidebar() {
         { icon: EyeDashed, href: '/dashboard/founder', label: "Overview" },
         { icon: Briefcase, href: '/dashboard/founder/mystartup', label: "My Startup" },
         { icon: CirclePlus, href: '/dashboard/founder/mystartup/new', label: "Add Opportunity" },
-        { icon: WeightHanging, href: '/dashboard/founder/mystartup/6a38130225de2be6129291d3/edit', label: "Manage Opportunities" },
+        { icon: WeightHanging, href: '/dashboard/founder/mystartup/new/opportunities', label: "Manage Opportunities" },
         { icon: LogoTelegram, href: '/', label: "Applications" },
     ];
 

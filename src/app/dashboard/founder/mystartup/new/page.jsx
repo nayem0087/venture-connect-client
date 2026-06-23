@@ -14,103 +14,135 @@ import {
     toast,
     Table
 } from "@heroui/react";
-import { createStartup } from "@/lib/actions/startups";
 import { redirect } from "next/navigation";
 import Loading from "@/components/Loading";
+import { createOpportunities } from "@/lib/actions/opportunities";
 
 
-export default function CreateStartupPage() {
+export default function CreateOpportunitiesPage() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 2000);
-    return () => clearTimeout(timer);
-  }, []);
+        const timer = setTimeout(() => setIsLoading(false), 2000);
+        return () => clearTimeout(timer);
+    }, []);
 
-    if(isLoading) {
-       return <Loading/>
+    if (isLoading) {
+        return <Loading />
     }
-    
-  const handleSubmit = async (e) => {
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         const data = Object.fromEntries(formData.entries());
 
-        
-        const startup = {
-            name: formData.get("name"),
-            industry: formData.get("industry"),
-            funding: formData.get("funding"),
-            email: formData.get("email"),
-            description: formData.get("description"),
-            status: "pending",
+
+        const opportunities = {
+            title: formData.get("title") ? String(formData.get("title")) : "",
+            skills: formData.get("skills") ? String(formData.get("skills")) : "",
+            workType: formData.get("workType") ? String(formData.get("workType")) : "",
+            commitment: formData.get("commitment") ? String(formData.get("commitment")) : "",
+            deadline: formData.get("deadline") ? String(formData.get("deadline")) : "",
+            status: "active", 
         };
 
-        console.log('new', startup);
+        console.log('new', opportunities);
 
-        // Server action কল করুন
-        const res = await createStartup(startup);
+        const res = await createOpportunities(opportunities);
         if (res.insertedId) {
             toast.success("Job posted successfully!");
             e.target.reset();
-            redirect("/dashboard/founder");
+            redirect("/dashboard/founder/mystartup/new/opportunities");
         }
     };
 
     return (
         <div className="min-h-screen bg-[#0d0d0e] text-white py-12 px-4">
             <div className="max-w-2xl mx-auto">
-                <h1 className="text-3xl font-bold mb-1">My Startup</h1>
-                <p className="text-zinc-400 text-sm mb-8">Create your startup application.</p>
+                <h1 className="text-3xl font-bold mb-1">My Opportunities</h1>
+                <p className="text-zinc-400 text-sm mb-8">Create your opportunities application.</p>
 
-                    <Card className="bg-[#121214] border border-zinc-900 p-8">
-                        <Form onSubmit={handleSubmit} className="space-y-6">
-                            <TextField name="name" className="flex flex-col gap-1">
-                                <Label className="text-zinc-400 text-sm">Startup Name</Label>
-                                <Input placeholder="e.g. TechNova" className="bg-[#1c1c1e] h-12 rounded-lg px-3" required />
-                            </TextField>
+                <Card className="bg-[#121214] border border-zinc-900 p-8 max-w-2xl mx-auto">
+              
+                    <div className="mb-6">
+                        <h2 className="text-xl font-bold text-white">Add Opportunity</h2>
+                        <p className="text-zinc-500 text-xs mt-1">
+                            Post a role for your startup. <span className="text-amber-500/80">(2/3 free slots used)</span>
+                        </p>
+                    </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <Select name="industry" className="w-full">
-                                    <Label className="text-zinc-400 text-sm">Industry</Label>
-                                    <Select.Trigger className="bg-[#1c1c1e] h-12 rounded-lg px-3"><Select.Value /></Select.Trigger>
-                                    <Select.Popover className="bg-[#1c1c1e] p-2 border border-zinc-800 rounded-lg">
-                                        <ListBox>
-                                            <ListBox.Item id="tech">Technology</ListBox.Item>
-                                            <ListBox.Item id="e-commerce">E-commerce</ListBox.Item>
-                                        </ListBox>
-                                    </Select.Popover>
-                                </Select>
+                    <Form onSubmit={handleSubmit} className="space-y-6">
+                        {/* ১. Role Title */}
+                        <TextField name="title" className="flex flex-col gap-1">
+                            <Label className="text-zinc-400 text-sm">Role Title *</Label>
+                            <Input
+                                placeholder="e.g. Senior React Developer"
+                                className="bg-[#1c1c1e] text-white h-12 rounded-lg px-3 outline-none border border-zinc-800/50 focus:border-purple-600 transition"
+                                required
+                            />
+                        </TextField>
 
-                                <Select name="funding" className="w-full">
-                                    <Label className="text-zinc-400 text-sm">Funding Stage</Label>
-                                    <Select.Trigger className="bg-[#1c1c1e] h-12 rounded-lg px-3"><Select.Value /></Select.Trigger>
-                                    <Select.Popover className="bg-[#1c1c1e] p-2 border border-zinc-800 rounded-lg">
-                                        <ListBox>
-                                            <ListBox.Item id="seed">Seed</ListBox.Item>
-                                            <ListBox.Item id="pro-seed">Pro-seed</ListBox.Item>
-                                        </ListBox>
-                                    </Select.Popover>
-                                </Select>
-                            </div>
+                        {/* ২. Required Skills */}
+                        <TextField name="skills" className="flex flex-col gap-1">
+                            <Label className="text-zinc-400 text-sm">Required Skills * <span className="text-zinc-500 text-xs">(comma-separated)</span></Label>
+                            <Input
+                                placeholder="e.g. React, TypeScript, Node.js"
+                                className="bg-[#1c1c1e] text-white h-12 rounded-lg px-3 outline-none border border-zinc-800/50 focus:border-purple-600 transition"
+                                required
+                            />
+                        </TextField>
 
-                            <TextField name="email" className="flex flex-col gap-1">
-                                <Label className="text-zinc-400 text-sm">Founder Email</Label>
-                                <Input type="email" className="bg-[#1c1c1e] h-12 rounded-lg px-3" required />
-                            </TextField>
+                     
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {/* Work Type */}
+                            <Select name="workType" className="w-full">
+                                <Label className="text-zinc-400 text-sm">Work Type *</Label>
+                                <Select.Trigger className="bg-[#1c1c1e] text-white h-12 rounded-lg px-3 border border-zinc-800/50 flex items-center justify-between">
+                                    <Select.Value placeholder="Select type" />
+                                </Select.Trigger>
+                                <Select.Popover className="bg-[#1c1c1e] p-2 border border-zinc-800 rounded-lg text-white">
+                                    <ListBox>
+                                        <ListBox.Item id="remote">Remote</ListBox.Item>
+                                        <ListBox.Item id="on-site">On-site</ListBox.Item>
+                                        <ListBox.Item id="hybrid">Hybrid</ListBox.Item>
+                                    </ListBox>
+                                </Select.Popover>
+                            </Select>
 
-                            <input type="hidden" name="status" value="pending" />
+                            {/* Commitment Level */}
+                            <Select name="commitment" className="w-full">
+                                <Label className="text-zinc-400 text-sm">Commitment Level *</Label>
+                                <Select.Trigger className="bg-[#1c1c1e] text-white h-12 rounded-lg px-3 border border-zinc-800/50 flex items-center justify-between">
+                                    <Select.Value placeholder="Select level" />
+                                </Select.Trigger>
+                                <Select.Popover className="bg-[#1c1c1e] p-2 border border-zinc-800 rounded-lg text-white">
+                                    <ListBox>
+                                        <ListBox.Item id="full-time">Full-time</ListBox.Item>
+                                        <ListBox.Item id="part-time">Part-time</ListBox.Item>
+                                        <ListBox.Item id="contract">Contract</ListBox.Item>
+                                        <ListBox.Item id="internship">Internship</ListBox.Item>
+                                    </ListBox>
+                                </Select.Popover>
+                            </Select>
+                        </div>
 
-                            <TextField name="description" className="flex flex-col gap-1">
-                                <Label className="text-zinc-400 text-sm">Description</Label>
-                                <TextArea placeholder="Describe your mission..." className="bg-[#1c1c1e] p-3 rounded-lg" required />
-                            </TextField>
+                        {/* ৫. Application Deadline */}
+                        <TextField name="deadline" className="flex flex-col gap-1">
+                            <Label className="text-zinc-400 text-sm">Application Deadline *</Label>
+                            <Input
+                                type="date"
+                                className="bg-[#1c1c1e] text-white h-12 rounded-lg px-3 outline-none border border-zinc-800/50 focus:border-purple-600 transition dark:[color-scheme:dark]"
+                                required
+                            />
+                        </TextField>
 
-                            <Button type="submit" className="w-full h-12 bg-purple-700 font-semibold rounded-lg hover:bg-purple-800">
-                                Create Startup
-                            </Button>
-                        </Form>
-                    </Card>
+                        <input type="hidden" name="status" value="active" />
+
+                        <Button type="submit" className="w-full h-12 bg-purple-700 font-semibold rounded-lg hover:bg-purple-800 text-white flex items-center justify-center gap-2 transition-all mt-2">
+                            <span className="text-lg">⊕</span> Post Opportunity
+                        </Button>
+                    </Form>
+                </Card>
             </div>
         </div>
     );

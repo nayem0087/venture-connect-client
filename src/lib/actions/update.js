@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 
-// এখানে দ্বিতীয় প্যারামিটার হিসেবে সরাসরি ফ্রন্টএন্ডের পাঠানো অবজেক্টটি রিসিভ হচ্ছে
 export async function updateStartup(id, updateData) {
     try {
         console.log("--- SERVER ACTION HIT ---");
@@ -13,13 +12,12 @@ export async function updateStartup(id, updateData) {
             return { success: false, error: "No data provided for update." };
         }
 
-        // আপনার এক্সপ্রেস ব্যাকএন্ডে রিকোয়েস্ট পাঠানো
         const response = await fetch(`http://localhost:5000/api/startups/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(updateData), // সরাসরি অবজেক্টটি স্ট্রিংগিফাই হচ্ছে
+            body: JSON.stringify(updateData), 
         });
 
         const responseText = await response.text();

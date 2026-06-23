@@ -1,0 +1,39 @@
+'use server';
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+
+// Fetch all opportunities
+export async function getAllOpportunities() {
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/jobs`, { cache: 'no-store' });
+        return await res.json();
+    } catch (error) {
+        return { success: false, data: [] };
+    }
+}
+
+// Update an opportunity
+export async function updateOpportunity(id, opportunityData) {
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/jobs/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(opportunityData)
+        });
+        return await res.json();
+    } catch (error) {
+        return { success: false, message: "Failed to update opportunity" };
+    }
+}
+
+// Delete an opportunity
+export async function deleteOpportunity(id) {
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/jobs/${id}`, {
+            method: 'DELETE'
+        });
+        return await res.json();
+    } catch (error) {
+        return { success: false, message: "Failed to delete opportunity" };
+    }
+}

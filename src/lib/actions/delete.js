@@ -29,7 +29,6 @@ export async function deleteStartup(id) {
         }
 
         if (response.ok && result.success) {
-            // ক্যাশ ক্লিয়ার করা যেন ফ্রন্টএন্ডে সাথে সাথে আপডেট দেখা যায়
             revalidatePath("/dashboard/founder/mystartup");
             return { success: true, message: result.message };
         } else {

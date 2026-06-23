@@ -1,25 +1,24 @@
 "use client";
 
 import React, { useEffect, useState, useTransition } from "react";
-import {
-    Form,
-    TextField,
-    TextArea,
-    Label,
-    Input,
-    Select,
-    ListBox,
+import { 
+    Form, 
+    TextField, 
+    TextArea, 
+    Label, 
+    Input, 
+    Select, 
+    ListBox, 
     Button,
     Card
 } from "@heroui/react";
 import { ArrowUpToLine, Globe, Factory, ArrowRight, Pencil, ChevronDown, TrashBin } from "@gravity-ui/icons";
-import { toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";     
 import Loading from "@/components/Loading";
 
 import { getAllStartups } from "@/lib/api/startup";
 import { createStartup } from "@/lib/actions/startups";
 import { updateStartup } from "@/lib/actions/update";
-import { deleteStartup } from "@/lib/actions/delete";
 
 const textInputClass = "w-full bg-[#1c1c1e] text-white rounded-lg px-3 h-12 outline-none border border-zinc-800 focus:border-zinc-700 transition";
 const selectBoxClass = "w-full flex flex-col gap-1";
@@ -32,11 +31,10 @@ export default function MyStartupPage({ founder }) {
     const [startups, setStartups] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
-    const [selectedStartup, setSelectedStartup] = useState(null);
+    const [selectedStartup, setSelectedStartup] = useState(null); 
     const [previewImage, setPreviewImage] = useState("");
     const [isPending, startTransition] = useTransition();
 
-    
     const [selectedIndustry, setSelectedIndustry] = useState("tech");
     const [selectedFunding, setSelectedFunding] = useState("seed");
 
@@ -78,7 +76,7 @@ export default function MyStartupPage({ founder }) {
         formData.append('image', file);
 
         try {
-            const IMGBB_API_KEY = process.env.NEXT_PUBLIC_IMAGE_UPLOAD_API;
+            const IMGBB_API_KEY = process.env.NEXT_PUBLIC_IMAGE_UPLOAD_API; 
             if (!IMGBB_API_KEY) {
                 throw new Error("ImgBB API key is missing in environment variables.");
             }
@@ -88,7 +86,7 @@ export default function MyStartupPage({ founder }) {
                 body: formData
             });
             const data = await response.json();
-
+            
             if (data.success) {
                 setLogoUrl(data.data.url);
                 toast.success("Logo uploaded successfully!");
@@ -106,41 +104,41 @@ export default function MyStartupPage({ founder }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
-
+        
         startTransition(async () => {
             if (selectedStartup?._id) {
-                
+                // 💡 সেভ চেঞ্জেস বা আপডেট লজিক
                 const updateData = {
                     name: formData.get("name") ? String(formData.get("name")) : "",
-                    industry: String(selectedIndustry), 
-                    funding: String(selectedFunding),
+                    industry: String(selectedIndustry), // স্টেট থেকে সুনির্দিষ্ট ভ্যালু নেওয়া হচ্ছে
+                    funding: String(selectedFunding),   // স্টেট থেকে সুনির্দিষ্ট ভ্যালু নেওয়া হচ্ছে
                     email: formData.get("email") ? String(formData.get("email")) : "",
-                    logo: logoUrl || selectedStartup?.logo || "",
+                    logo: logoUrl || selectedStartup?.logo || "", 
                     description: formData.get("description") ? String(formData.get("description")) : ""
                 };
 
                 console.log("From frontend to backend update data:", updateData);
 
                 const res = await updateStartup(selectedStartup._id, updateData);
-
+                
                 if (res && res.success) {
                     toast.success("Startup updated successfully!");
                     setIsEditing(false);
                     setSelectedStartup(null);
-                    setLogoUrl('');
-                    fetchStartups();
+                    setLogoUrl(''); 
+                    fetchStartups(); 
                 } else {
                     toast.error(res?.error || "Something went wrong during update!");
                 }
             } else {
-                
+                // 💡 নতুন স্টার্টআপ রেজিস্ট্রেশন লজিক
                 const newStartupObj = {
                     name: formData.get("name") ? String(formData.get("name")) : "",
                     industry: String(selectedIndustry),
                     funding: String(selectedFunding),
                     email: formData.get("email") ? String(formData.get("email")) : "",
                     description: formData.get("description") ? String(formData.get("description")) : "",
-                    logo: logoUrl || "",
+                    logo: logoUrl || "", 
                     status: "pending",
                     founderId: founder?.id || founder?._id, // Safe fallback id matching
                 };
@@ -151,27 +149,10 @@ export default function MyStartupPage({ founder }) {
                     toast.success("Startup registered successfully!");
                     setIsEditing(false);
                     setLogoUrl('');
-                    fetchStartups();
+                    fetchStartups(); 
                 } else {
                     toast.error("Failed to create startup.");
                 }
-            }
-        });
-    };
-
-    const handleDelete = async (id) => {
-       
-        if (!window.confirm("Are you sure you want to delete this startup?")) return;
-
-        startTransition(async () => {
-            const res = await deleteStartup(id);
-
-            if (res && res.success) {
-                toast.success("Startup deleted successfully!");
-                
-                setStartups((prevStartups) => prevStartups.filter(startup => startup._id !== id));
-            } else {
-                toast.error(res?.error || "Failed to delete startup");
             }
         });
     };
@@ -209,7 +190,7 @@ export default function MyStartupPage({ founder }) {
                             To start creating structural job posts and tracking incoming pipelines, configure your startup workspace profile.
                         </p>
                     </div>
-                    <Button
+                    <Button 
                         onPress={startRegistration}
                         className="bg-white text-black font-semibold hover:bg-zinc-200 rounded-lg px-6 h-11 transition-all inline-flex items-center"
                     >
@@ -229,22 +210,22 @@ export default function MyStartupPage({ founder }) {
                             <h2 className="text-3xl font-bold">My Startups</h2>
                             <p className='text-gray-500 mt-1'>View and manage your startup applications.</p>
                         </div>
-                        <Button
-                            onPress={startRegistration}
+                        <Button 
+                            onPress={startRegistration} 
                             className="bg-purple-700 hover:bg-purple-800 text-white font-medium h-10 px-4 rounded-lg"
                         >
                             + Add New
                         </Button>
                     </div>
-
+                    
                     <div className="grid grid-cols-1 gap-6">
                         {startups.map((startup) => {
                             const isStatusApproved = startup.status?.toLowerCase() === 'approved';
                             const isStatusRejected = startup.status?.toLowerCase() === 'rejected';
-
+                            
                             return (
-                                <div
-                                    key={startup._id}
+                                <div 
+                                    key={startup._id} 
                                     className="bg-[#121214] border border-zinc-900 rounded-2xl p-6 shadow-xl hover:border-zinc-800 transition-all"
                                 >
                                     <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4 pb-4 border-b border-zinc-900/60">
@@ -256,16 +237,17 @@ export default function MyStartupPage({ founder }) {
                                                     {startup.name?.charAt(0).toUpperCase()}
                                                 </div>
                                             )}
-
+                                            
                                             <div>
                                                 <h3 className="text-xl font-bold text-white">{startup.name}</h3>
                                                 <div className="flex flex-wrap gap-2 mt-2">
                                                     <span className="bg-zinc-900 text-zinc-400 border border-zinc-800 px-2.5 py-0.5 rounded-full text-xs font-medium uppercase">{startup.industry}</span>
                                                     <span className="bg-zinc-900 text-zinc-400 border border-zinc-800 px-2.5 py-0.5 rounded-full text-xs font-medium uppercase">{startup.funding}</span>
-                                                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border text-center ${isStatusApproved ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                                                            isStatusRejected ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' :
-                                                                'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                                                        }`}>
+                                                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border text-center ${
+                                                        isStatusApproved ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
+                                                        isStatusRejected ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 
+                                                        'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                                                    }`}>
                                                         {startup.status || 'Pending'}
                                                     </span>
                                                 </div>
@@ -273,20 +255,18 @@ export default function MyStartupPage({ founder }) {
                                         </div>
 
                                         <div className="flex gap-2 w-full sm:w-auto">
-                                            <Button
+                                            <Button 
                                                 onPress={() => startEditing(startup)}
                                                 variant="bordered"
                                                 className="flex-1 sm:flex-initial border-zinc-800 text-zinc-300 hover:bg-zinc-900 rounded-lg px-4 font-medium h-9 text-xs flex items-center gap-1.5"
                                             >
                                                 <Pencil size={14} /> Edit
                                             </Button>
-                                            <Button
+                                            <Button 
                                                 variant="light"
-                                                onPress={() => handleDelete(startup._id)} 
-                                                isDisabled={isPending} 
                                                 className="flex-1 sm:flex-initial bg-rose-950/20 hover:bg-rose-950/40 text-rose-400 rounded-lg px-4 font-medium h-9 text-xs flex items-center gap-1.5"
                                             >
-                                                <TrashBin size={14} /> {isPending ? "Deleting..." : "Delete"}
+                                                <TrashBin size={14} /> Delete
                                             </Button>
                                         </div>
                                     </div>
@@ -294,7 +274,7 @@ export default function MyStartupPage({ founder }) {
                                     <p className="text-zinc-400 text-sm leading-relaxed whitespace-pre-wrap bg-zinc-900/20 p-4 rounded-xl border border-zinc-900/50">
                                         {startup.description}
                                     </p>
-
+                                    
                                     {startup.email && (
                                         <div className="mt-4 text-xs text-zinc-500 flex items-center gap-1">
                                             <Globe size={12} /> Contact Email: <span className="text-zinc-400">{startup.email}</span>
@@ -321,7 +301,7 @@ export default function MyStartupPage({ founder }) {
 
                 <Card className="bg-[#121214] border border-zinc-900 p-8">
                     <Form onSubmit={handleSubmit} className="space-y-6">
-
+                        
                         {/* Startup Name Input */}
                         <TextField name="name" defaultValue={selectedStartup?.name || ''} className="flex flex-col gap-1">
                             <Label className="text-zinc-400 text-sm">Startup Name *</Label>
@@ -332,9 +312,9 @@ export default function MyStartupPage({ founder }) {
                             <Label className="text-zinc-400 text-sm">Logo Image</Label>
                             <div className="flex items-center gap-4 p-4 bg-[#1c1c1e] rounded-lg border border-zinc-800">
                                 {previewImage ? (
-                                    <img
-                                        src={previewImage}
-                                        alt="Logo Preview"
+                                    <img 
+                                        src={previewImage} 
+                                        alt="Logo Preview" 
                                         className="w-16 h-16 object-cover rounded-lg bg-zinc-800 border border-zinc-700"
                                     />
                                 ) : (
@@ -344,11 +324,11 @@ export default function MyStartupPage({ founder }) {
                                 )}
                                 <label className={`cursor-pointer bg-purple-700 hover:bg-purple-800 text-white text-xs font-semibold py-2 px-4 rounded-lg transition inline-flex items-center gap-1 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
                                     <ArrowUpToLine size={14} /> {isUploading ? "Uploading..." : "Update Logo"}
-                                    <input
-                                        type="file"
-                                        name="logo"
-                                        accept="image/*"
-                                        className="hidden"
+                                    <input 
+                                        type="file" 
+                                        name="logo" 
+                                        accept="image/*" 
+                                        className="hidden" 
                                         disabled={isUploading}
                                         onChange={handleImageChange}
                                     />
@@ -358,9 +338,9 @@ export default function MyStartupPage({ founder }) {
 
                         {/* Industry & Funding Select Options */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                           
-                            <Select
-                                name="industry"
+                            {/* 💡 HeroUI Select নিয়ন্ত্রিত করা হয়েছে onSelectionChange এর মাধ্যমে */}
+                            <Select 
+                                name="industry" 
                                 className={selectBoxClass}
                                 selectedKeys={[selectedIndustry]}
                                 onSelectionChange={(keys) => setSelectedIndustry(Array.from(keys)[0])}
@@ -379,8 +359,8 @@ export default function MyStartupPage({ founder }) {
                                 </Select.Popover>
                             </Select>
 
-                            <Select
-                                name="funding"
+                            <Select 
+                                name="funding" 
                                 className={selectBoxClass}
                                 selectedKeys={[selectedFunding]}
                                 onSelectionChange={(keys) => setSelectedFunding(Array.from(keys)[0])}
@@ -409,29 +389,29 @@ export default function MyStartupPage({ founder }) {
                         {/* Description TextArea */}
                         <TextField name="description" defaultValue={selectedStartup?.description || ''} className="flex flex-col gap-1">
                             <Label className="text-zinc-400 text-sm">Description *</Label>
-                            <TextArea
-                                placeholder="Describe your mission and culture..."
+                            <TextArea 
+                                placeholder="Describe your mission and culture..." 
                                 rows={4}
-                                className={textAreaClass}
-                                required
+                                className={textAreaClass} 
+                                required 
                             />
                         </TextField>
 
                         {/* Form Actions Footer Controls */}
                         <div className="flex gap-4 pt-4 border-t border-zinc-900/80">
-                            <Button
-                                type="button"
+                            <Button 
+                                type="button" 
                                 onClick={() => {
                                     setIsEditing(false);
                                     setSelectedStartup(null);
                                     setLogoUrl('');
-                                }}
+                                }} 
                                 className="w-1/2 h-12 bg-zinc-800 text-white font-semibold rounded-lg hover:bg-zinc-700 transition-colors"
                             >
                                 Cancel
                             </Button>
-                            <Button
-                                type="submit"
+                            <Button 
+                                type="submit" 
                                 isDisabled={isPending || isUploading}
                                 className="w-1/2 h-12 bg-purple-700 font-semibold text-white rounded-lg hover:bg-purple-800 transition-colors"
                             >
