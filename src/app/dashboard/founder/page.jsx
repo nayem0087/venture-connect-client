@@ -155,7 +155,7 @@ export default function FounderDashboardHomePage() {
                             style={{ height: `${(counts.accepted / maxVal) * 100}%` }}
                             className="w-full max-w-[120px] bg-gradient-to-t from-emerald-600 to-teal-500 rounded-t-lg transition-all duration-500 hover:opacity-80 relative"
                         >
-                            <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-semibold text-emerald-400 opacity-0 group-hover:opacity-100 transition">
+                            <span className="absolute -top-20 left-1/2 -translate-x-1/2 text-7xl font-extrabold text-emerald-400 opacity-0 group-hover:opacity-100 transition">
                                 {counts.accepted}
                             </span>
                         </div>

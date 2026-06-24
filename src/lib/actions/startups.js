@@ -13,6 +13,7 @@ export const createStartup = async (newStartupData) => {
     return res.json();
 };
 
+
 export const updateStartup = async (id, updatedStartupData) => {
     const res = await fetch(`${baseUrl}/api/startups/${id}`, {
         method: 'PUT', 

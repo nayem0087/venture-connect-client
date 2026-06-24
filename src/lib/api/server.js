@@ -19,7 +19,6 @@ app.put('/api/startups/:id', async (req, res) => {
                 funding: updatedData.funding,
                 email: updatedData.email,
                 description: updatedData.description,
-                // 💡 logoUrl এর জায়গায় updatedData.logo ব্যবহার করা হলো
                 logo: updatedData.logo || "", 
                 status: updatedData.status || "pending" 
             }
