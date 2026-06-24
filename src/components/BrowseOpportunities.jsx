@@ -42,6 +42,7 @@ const BrowseOpportunitiesPage = () => {
                             <h2 className="text-2xl font-bold mb-2 group-hover:text-purple-400 transition-colors">{opp.title}</h2>
                             <p className="text-zinc-500 text-sm mb-6">Email : {opp.email}</p>
                             <div className="flex flex-wrap gap-2 mb-8">
+                                <h2 className='font-semibold text-sm text-gray-300'>Skills : </h2>
                                 {opp.skills?.split(',').map((skill, i) => (
                                     <span key={`${opp._id?.$oid || opp._id}-skill-${i}`} className="px-3 py-1 bg-zinc-900 rounded-lg text-[11px] font-medium text-zinc-400 border border-zinc-800 uppercase tracking-wider">
                                         {skill.trim()}

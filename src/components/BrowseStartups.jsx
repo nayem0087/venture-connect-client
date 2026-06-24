@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import Link from 'next/link'; // লিঙ্ক করার জন্য এটি ইমপোর্ট করুন
+import Link from 'next/link'; 
 import Loading from './Loading';
 
 const BrowseStartupsPage = () => {
@@ -39,7 +39,7 @@ const BrowseStartupsPage = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
             >
-                {/* মাত্র ৬টি ডাটা দেখানোর জন্য slice(0, 6) */}
+  
                 {startups.slice(0, 6).map((startup, index) => (
                     <motion.div
                         key={startup._id.$oid || startup._id}
@@ -49,7 +49,7 @@ const BrowseStartupsPage = () => {
                         whileHover={{ y: -8 }}
                         className="bg-[#121214] border border-zinc-800 rounded-2xl p-6 cursor-pointer hover:border-purple-500/50 transition-colors shadow-lg"
                     >
-                        {/* কার্ড কন্টেন্ট একই রাখা হয়েছে */}
+                      
                         <div className="flex items-start gap-4 mb-4">
                             <motion.img whileHover={{ scale: 1.05 }} src={startup.logo} alt={startup.name} className="w-14 h-14 rounded-xl object-cover bg-zinc-900 border border-zinc-800" />
                             <div>
