@@ -5,25 +5,23 @@ import Link from "next/link";
 import { Button, Spinner } from "@heroui/react";
 import { Star } from '@gravity-ui/icons';
 import { signOut, useSession } from "@/lib/auth-client";
-
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: session, isPending } = useSession();
-  // console.log('session', session, 'is pending, isPending');
 
   const user = session?.user;
 
   const handleSignOut = async () => {
-    // FIX: Call signOut via the authClient instance
     await signOut();
   };
 
-  // Nav links configured using the dynamic route parameters
   const navLinks = [
     { label: "Home", href: "/" },
-    { label: "Browse Startups", href: "/browse-startups" },
-    { label: "Browse Opportunities", href: "/browse-opportunities" },
+    { label: "Browse Startups", href: "/startups" },
+    { label: "Browse Opportunities", href: "/opportunities" },
   ];
 
   return (
@@ -46,18 +44,29 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           <div className="hidden items-center gap-6 md:flex">
 
-            {/* Nav Links Container */}
+            {/* Nav Links Container (DESKTOP ACTIVE BG FIX) */}
             <ul className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-2">
-              {navLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="rounded-full px-4 py-2 text-sm font-medium text-gray-300 transition hover:bg-white/10 hover:text-white"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
+              {navLinks.map((link) => {
+                
+                const isActive = link.href === '/' 
+                  ? pathname === '/' 
+                  : pathname.startsWith(link.href);
+
+                return (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className={`rounded-full px-4 py-2 text-sm font-medium transition duration-200
+                        ${isActive 
+                          ? 'bg-purple-600 text-white font-semibold' 
+                          : 'text-gray-300 hover:bg-white/10 hover:text-white'
+                        }`}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
 
             {/* Vertical Separation Token Line */}
@@ -66,10 +75,9 @@ export default function Navbar() {
             {/* Desktop Authentication Mapping Pipeline */}
             <div className="flex items-center gap-4">
               {isPending ? (
-                <div className="flex  items-center justify-center min-h-screen">
+                <div className="flex items-center justify-center min-h-screen">
                   <Spinner />
                 </div>
-
               ) : user ? (
                 <>
                   <span className="text-sm font-medium text-gray-300">
@@ -130,19 +138,29 @@ export default function Navbar() {
         <div className="border-t border-white/10 bg-[#0B0B0F] md:hidden animate-in fade-in slide-in-from-top-5 duration-200">
           <div className="space-y-3 px-4 py-6">
 
-            {/* Nav Menu Lists */}
+            {/* Nav Menu Lists (MOBILE ACTIVE BG FIX) */}
             <ul className="space-y-2">
-              {navLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="block rounded-xl px-4 py-3 text-base font-medium text-gray-300 transition hover:bg-white/5 hover:text-white"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
+              {navLinks.map((link) => {
+                const isActive = link.href === '/' 
+                  ? pathname === '/' 
+                  : pathname.startsWith(link.href);
+
+                return (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className={`block rounded-xl px-4 py-3 text-base font-medium transition duration-200
+                        ${isActive 
+                          ? 'bg-purple-600 text-white font-semibold'
+                          : 'text-gray-300 hover:bg-white/5 hover:text-white'
+                        }`}
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
 
             {/* Conditional Mobile Footer Area */}
