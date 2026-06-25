@@ -77,7 +77,9 @@ const OpportunitiesViewPage = () => {
                             whileHover={{ y: -8, borderColor: "#a855f7" }}
                             className="group relative bg-[#0d0d0e] border border-zinc-800 rounded-3xl p-8"
                         >
-                            <h2 className="text-2xl font-bold mb-2 group-hover:text-purple-400">{opp.title}</h2>
+                            <h2 className="text-2xl font-bold mb-2 group-hover:text-purple-400 transition-colors line-clamp-1 truncate-options">
+                                {opp.title}
+                            </h2>
                             <p className="text-zinc-500 text-sm mb-6">Email: {opp.email}</p>
 
 
@@ -96,7 +98,7 @@ const OpportunitiesViewPage = () => {
                                     <span className="text-zinc-500">Commitment</span>
                                     <span className="font-semibold text-zinc-200 capitalize">{opp.commitment}</span>
                                 </div>
-                                <div className="flex justify-between text-sm">
+                                <div className="flex justify-between text-sm mb-4">
                                     <span className="text-zinc-500">Work Mode</span>
                                     <span className="font-semibold text-zinc-200 capitalize">{opp.workType}</span>
                                 </div>

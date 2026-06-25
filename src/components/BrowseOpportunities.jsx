@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { getAllOpportunities } from '@/lib/actions/jobs';
+import { Button } from '@heroui/react';
 
 const BrowseOpportunitiesPage = () => {
     const [opportunities, setOpportunities] = useState([]);
@@ -31,38 +32,42 @@ const BrowseOpportunitiesPage = () => {
 
             <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {loading ? [...Array(6)].map((_, i) => <div key={i} className="h-64 bg-zinc-900/30 rounded-3xl animate-pulse" />)
-                : (opportunities.slice(0, 6).map((opp) => (
-                    <motion.div 
-                        key={opp._id?.$oid || opp._id}
-                        whileHover={{ y: -8 }}
-                        className="group relative bg-[#0d0d0e] border border-zinc-800 rounded-3xl p-8 hover:border-zinc-700 transition-all duration-300 shadow-xl"
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="relative z-10">
-                            <h2 className="text-2xl font-bold mb-2 group-hover:text-purple-400 transition-colors">{opp.title}</h2>
-                            <p className="text-zinc-500 text-sm mb-6">Email : {opp.email}</p>
-                            <div className="flex flex-wrap gap-2 mb-8">
-                                <h2 className='font-semibold text-sm text-gray-300'>Skills : </h2>
-                                {opp.skills?.split(',').map((skill, i) => (
-                                    <span key={`${opp._id?.$oid || opp._id}-skill-${i}`} className="px-3 py-1 bg-zinc-900 rounded-lg text-[11px] font-medium text-zinc-400 border border-zinc-800 uppercase tracking-wider">
-                                        {skill.trim()}
-                                    </span>
-                                ))}
-                            </div>
-                            <div className="space-y-3 border-t border-zinc-800 pt-6">
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-zinc-500">Commitment</span>
-                                    <span className="font-semibold text-zinc-200 capitalize">{opp.commitment}</span>
+                    : (opportunities.slice(0, 6).map((opp) => (
+                        <motion.div
+                            key={opp._id?.$oid || opp._id}
+                            whileHover={{ y: -8 }}
+                            className="group relative bg-[#0d0d0e] border border-zinc-800 rounded-3xl p-8 hover:border-zinc-700 transition-all duration-300 shadow-xl"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="relative z-10">
+                                <h2 className="text-2xl font-bold mb-2 group-hover:text-purple-400 transition-colors line-clamp-1 truncate-options">
+                                    {opp.title}
+                                </h2>
+                                <p className="text-zinc-500 text-sm mb-6">Email : {opp.email}</p>
+                                <div className="flex flex-wrap gap-2 mb-8">
+                                    <h2 className='font-semibold text-sm text-gray-300'>Skills : </h2>
+                                    {opp.skills?.split(',').map((skill, i) => (
+                                        <span key={`${opp._id?.$oid || opp._id}-skill-${i}`} className="px-3 py-1 bg-zinc-900 rounded-lg text-[11px] font-medium text-zinc-400 border border-zinc-800 uppercase tracking-wider">
+                                            {skill.trim()}
+                                        </span>
+                                    ))}
                                 </div>
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-zinc-500">Work Mode</span>
-                                    <span className="font-semibold text-zinc-200 capitalize">{opp.workType}</span>
+                                <div className="space-y-3 border-t border-zinc-800 pt-6">
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-zinc-500">Commitment</span>
+                                        <span className="font-semibold text-zinc-200 capitalize">{opp.commitment}</span>
+                                    </div>
+                                    <div className="flex justify-between text-sm mb-4">
+                                        <span className="text-zinc-500">Work Mode</span>
+                                        <span className="font-semibold text-zinc-200 capitalize">{opp.workType}</span>
+                                    </div>
                                 </div>
+                                <Link href={`/opportunities/${opp._id?.$oid || opp._id}`}>
+                                    <Button className={'w-full bg-purple-700 text-white'}>Apply now</Button>
+                                </Link>
                             </div>
-                            <p className='text-gray-500 text-center pt-4'>Only collaborators can apply</p>
-                        </div>
-                    </motion.div>
-                )))}
+                        </motion.div>
+                    )))}
             </motion.div>
 
             <div className="mt-12 text-center">

@@ -5,11 +5,16 @@ import { Button, Link } from "@heroui/react";
 import { CircleLetterG, Eye, EyeSlash, Envelope, Lock, Star } from "@gravity-ui/icons";
 import toast, { Toaster } from "react-hot-toast";
 import { authClient, signIn } from "@/lib/auth-client";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SignInPage() {
     // States
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectTo = searchParams.get("redirect") || "/";
     
     const [isVisible, setIsVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -32,13 +37,13 @@ export default function SignInPage() {
             const { data, error } = await signIn.email({
                 email,
                 password,
-                callbackURL: "/", // authentication sheshe jekhane navigate hobe
             });
 
             if (error) {
                 toast.error(error.message || "Invalid email or password!");
             } else {
                 toast.success("Welcome back! Loading dashboard... 🚀");
+                router.push(redirectTo);
             }
         } catch (err) {
             toast.error("An unexpected error occurred.");
@@ -160,7 +165,7 @@ export default function SignInPage() {
                     <div className="text-center pt-2">
                         <p className="text-sm text-gray-400">
                             Don't have an account?{" "}
-                            <Link href="/auth/signup" className="text-violet-400 hover:underline text-sm font-semibold">
+                            <Link href={`/auth/signup?redirect=${redirectTo}`} className="text-violet-400 hover:underline text-sm font-semibold">
                                 Sign up free
                             </Link>
                         </p>

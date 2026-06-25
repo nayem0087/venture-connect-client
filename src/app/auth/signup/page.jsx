@@ -6,6 +6,7 @@ import { CircleLetterG, Eye, EyeSlash, Person, Envelope, Lock, Picture, Star } f
 import toast, { Toaster } from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 import { Radio, RadioGroup } from "@heroui/react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SignupPage() {
     // States
@@ -15,6 +16,10 @@ export default function SignupPage() {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [profileImage, setProfileImage] = useState(null);
+
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectTo = searchParams.get("redirect") || "/";
 
     const [isVisible, setIsVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -49,13 +54,13 @@ export default function SignupPage() {
                 name: fullName,
                 image: profileImage || undefined,
                 role,
-                callbackURL: "/",
             });
 
             if (error) {
                 toast.error(error.message || "Something went wrong!");
             } else {
                 toast.success("Account created successfully! 🚀");
+                router.push(redirectTo);
             }
         } catch (err) {
             toast.error("An unexpected error occurred.");
@@ -263,7 +268,7 @@ export default function SignupPage() {
                     <div className="text-center pt-2">
                         <p className="text-sm text-gray-400">
                             Already have an account?{" "}
-                            <Link href="/auth/signin" className="text-violet-400 hover:underline text-sm font-semibold">
+                            <Link href={`/auth/signin?redirect=${redirectTo}`} className="text-violet-400 hover:underline text-sm font-semibold">
                                 Sign in
                             </Link>
                         </p>

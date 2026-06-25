@@ -95,8 +95,8 @@ const OpportunityDetails = () => {
 
                     {/* Action Area */}
                     <div className="mt-10 flex gap-4">
-                        <Link href={''} className="flex-1 py-2 bg-purple-700 text-white font-bold rounded-xl hover:bg-purple-800 transition-all text-center">
-                            Apply Now
+                        <Link href={`/opportunities/${id}/apply`} className="flex-1 py-2 bg-purple-700 text-white font-bold rounded-xl hover:bg-purple-800 transition-all text-center">
+                            Apply Now For This Job
                         </Link>
                     </div>
                 </motion.div>
