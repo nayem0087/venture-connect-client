@@ -18,13 +18,13 @@ export default function Navbar() {
 
   const handleSignOut = async () => {
     try {
-        await signOut(); 
-        router.push('/auth/signin'); 
+      await signOut();
+      router.push('/auth/signin');
     } catch (error) {
-        console.error("Sign out failed", error);
+      console.error("Sign out failed", error);
     }
   }
-  
+
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "Browse Startups", href: "/startups" },
@@ -32,15 +32,16 @@ export default function Navbar() {
   ];
 
   const dashboardLinks = {
-    collaborator : '/dashboard/collaborator',
-    founder : '/dashboard/founder',
+    collaborator: '/dashboard/collaborator',
+    founder: '/dashboard/founder',
+    admin: '/dashboard/admin',
   }
 
-  if(user?.email) {
+  if (user?.email) {
     navLinks.push(
       {
-        label : 'Dashboard',
-        href : dashboardLinks[user?.role || 'collaborator']
+        label: 'Dashboard',
+        href: dashboardLinks[user?.role || 'collaborator']
       }
     )
   }
@@ -68,9 +69,9 @@ export default function Navbar() {
             {/* Nav Links Container (DESKTOP ACTIVE BG FIX) */}
             <ul className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-2">
               {navLinks.map((link) => {
-                
-                const isActive = link.href === '/' 
-                  ? pathname === '/' 
+
+                const isActive = link.href === '/'
+                  ? pathname === '/'
                   : pathname.startsWith(link.href);
 
                 return (
@@ -78,8 +79,8 @@ export default function Navbar() {
                     <Link
                       href={link.href}
                       className={`rounded-full px-4 py-2 text-sm font-medium transition duration-200
-                        ${isActive 
-                          ? 'bg-purple-600 text-white font-semibold' 
+                        ${isActive
+                          ? 'bg-purple-600 text-white font-semibold'
                           : 'text-gray-300 hover:bg-white/10 hover:text-white'
                         }`}
                     >
@@ -122,14 +123,12 @@ export default function Navbar() {
                     Sign In
                   </Link>
 
-                  <Button
-                    as={Link}
-                    href="/signup"
-                    radius="lg"
-                    className="h-11 bg-purple-500 px-6 text-sm font-semibold text-black hover:bg-purple-600 transition-colors"
+                  <Link
+                    href="/auth/signup"
+                    className="h-11 px-6 flex items-center justify-center rounded-xl bg-purple-700 text-white border border-white/20 text-sm font-semibold hover:bg-purple-800 hover:border-white/40 transition-all duration-300 backdrop-blur-md"
                   >
                     Get Started
-                  </Button>
+                  </Link>
                 </>
               )}
             </div>
@@ -162,8 +161,8 @@ export default function Navbar() {
             {/* Nav Menu Lists (MOBILE ACTIVE BG FIX) */}
             <ul className="space-y-2">
               {navLinks.map((link) => {
-                const isActive = link.href === '/' 
-                  ? pathname === '/' 
+                const isActive = link.href === '/'
+                  ? pathname === '/'
                   : pathname.startsWith(link.href);
 
                 return (
@@ -171,7 +170,7 @@ export default function Navbar() {
                     <Link
                       href={link.href}
                       className={`block rounded-xl px-4 py-3 text-base font-medium transition duration-200
-                        ${isActive 
+                        ${isActive
                           ? 'bg-purple-600 text-white font-semibold'
                           : 'text-gray-300 hover:bg-white/5 hover:text-white'
                         }`}

@@ -1,8 +1,10 @@
 import { getUserSession } from "@/lib/core/session";
 import { LayoutSideContent, EyeDashed, Briefcase, CirclePlus, WeightHanging, LogoTelegram } from "@gravity-ui/icons";
-import { LayoutHeaderCellsLarge, Paperclip, ListUl, Person } from '@gravity-ui/icons';
+import { LayoutHeaderCellsLarge, Paperclip, ListUl, Person,  ArrowRightFromSquare } from '@gravity-ui/icons';
+
 
 import { Button, Drawer } from "@heroui/react";
+import { admin } from "better-auth/plugins";
 import Link from "next/link";
 
 export async function DashboardSidebar() {
@@ -19,23 +21,47 @@ export async function DashboardSidebar() {
     ];
 
     const CollaboratorNavLinks = [
-    { 
-        icon: LayoutHeaderCellsLarge, href: '/dashboard/collaborator', label: "Overview" 
-    },
-    { 
-        icon: Paperclip, href: '/dashboard/collaborator/applications',label: "My Opportunities" 
-    },
-    { 
-        icon: ListUl, href: '/opportunities', label: "Browse Opportunities" 
-    },
-    { 
-        icon: Person, href: '/dashboard/collaborator/profile', label: "Profile" 
-    }
-];
+        {
+            icon: LayoutHeaderCellsLarge, href: '/dashboard/collaborator', label: "Overview"
+        },
+        {
+            icon: Paperclip, href: '/dashboard/collaborator/applications', label: "My Opportunities"
+        },
+        {
+            icon: ListUl, href: '/opportunities', label: "Browse Opportunities"
+        },
+        {
+            icon: Person, href: '/dashboard/collaborator/profile', label: "Profile"
+        }
+    ];
+
+    const AdminNavLinks = [
+        {
+            icon: EyeDashed,
+            href: '/dashboard/admin',
+            label: "Overview"
+        },
+        {
+            icon: Person,
+            href: '/dashboard/admin/users',
+            label: "Manage Users"
+        },
+        {
+            icon: Briefcase,
+            href: '/dashboard/admin/startups',
+            label: "Manage Startups"
+        },
+        {
+            icon: ArrowRightFromSquare,
+            href: '/dashboard/admin/transactions',
+            label: "Transactions"
+        },
+    ];
 
     const navLinksMap = {
-        collaborator : CollaboratorNavLinks,
-        founder : FounderNavLinks,
+        collaborator: CollaboratorNavLinks,
+        founder: FounderNavLinks,
+        admin: AdminNavLinks
     }
 
     const navItems = navLinksMap[user?.role || 'collaborator'];
