@@ -47,6 +47,9 @@ export default function SignupPage() {
 
         setIsLoading(true);
 
+        
+    const plan = role === 'collaborator' ? 'collaborator_free' : 'founder_free';
+
         try {
             const { data, error } = await authClient.signUp.email({
                 email,
@@ -54,6 +57,7 @@ export default function SignupPage() {
                 name: fullName,
                 image: profileImage || undefined,
                 role,
+                plan
             });
 
             if (error) {

@@ -6,6 +6,7 @@ import { Form, Button, TextField, Label, Input, Description, FieldError } from '
 import { ArrowRight, Link, FileText, LayoutHeaderCells } from '@gravity-ui/icons';
 import toast from 'react-hot-toast';
 import Loading from '@/components/Loading';
+import { useRouter } from 'next/navigation';
 
 const JobApply = ({ opportunity, user }) => {
     const [formData, setFormData] = useState({
@@ -15,8 +16,10 @@ const JobApply = ({ opportunity, user }) => {
     });
     const [isLoading, setIsLoading] = useState(false);
 
+    const router = useRouter();
+
     if (!opportunity) {
-        return <p className=""><Loading/></p>;
+        return <p className=""><Loading /></p>;
     }
 
     const handleChange = (e) => {
@@ -29,7 +32,7 @@ const JobApply = ({ opportunity, user }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!formData.resumeLink.trim()) {
             return toast.error("Please provide your resume link!");
         }
@@ -45,7 +48,7 @@ const JobApply = ({ opportunity, user }) => {
             applicantEmail: user?.email,
             applicantImage: user?.image,
             coverLetter: formData.additionalNotes,
-            portfolioUrl: formData.portfolioLink, 
+            portfolioUrl: formData.portfolioLink,
             resumeUrl: formData.resumeLink,
             appliedAt: new Date()
         };
@@ -64,6 +67,7 @@ const JobApply = ({ opportunity, user }) => {
             if (res.ok) {
                 toast.success("Application submitted successfully!");
                 setFormData({ resumeLink: '', portfolioLink: '', additionalNotes: '' });
+                router.push('/dashboard/collaborator/opportunities');
             } else {
                 toast.error("Failed to submit application. Try again.");
             }

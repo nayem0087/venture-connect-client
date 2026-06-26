@@ -1,17 +1,44 @@
+import { getUserSession } from "@/lib/core/session";
 import { LayoutSideContent, EyeDashed, Briefcase, CirclePlus, WeightHanging, LogoTelegram } from "@gravity-ui/icons";
+import { LayoutHeaderCellsLarge, Paperclip, ListUl, Person } from '@gravity-ui/icons';
 
 import { Button, Drawer } from "@heroui/react";
 import Link from "next/link";
 
-export function DashboardSidebar() {
+export async function DashboardSidebar() {
     // const startupId = params?.id || "";
-    const navItems = [
+
+    const user = await getUserSession();
+
+    const FounderNavLinks = [
         { icon: EyeDashed, href: '/dashboard/founder', label: "Overview" },
         { icon: Briefcase, href: '/dashboard/founder/mystartup', label: "My Startup" },
         { icon: CirclePlus, href: '/dashboard/founder/mystartup/new', label: "Add Opportunity" },
         { icon: WeightHanging, href: '/dashboard/founder/mystartup/new/opportunities', label: "Manage Opportunities" },
         { icon: LogoTelegram, href: '/dashboard/founder/mystartup/new/applications', label: "Applications" },
     ];
+
+    const CollaboratorNavLinks = [
+    { 
+        icon: LayoutHeaderCellsLarge, href: '/dashboard/collaborator', label: "Overview" 
+    },
+    { 
+        icon: Paperclip, href: '/dashboard/collaborator/opportunities',label: "My Opportunities" 
+    },
+    { 
+        icon: ListUl, href: '/dashboard/collaborator/opportunities', label: "Browse Opportunities" 
+    },
+    { 
+        icon: Person, href: '/dashboard/collaborator/profile', label: "Profile" 
+    }
+];
+
+    const navLinksMap = {
+        collaborator : CollaboratorNavLinks,
+        founder : FounderNavLinks,
+    }
+
+    const navItems = navLinksMap[user?.role || 'collaborator'];
 
     const navContent = <nav className="flex flex-col gap-1">
         {navItems.map((item) => (
