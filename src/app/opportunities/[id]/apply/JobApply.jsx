@@ -67,7 +67,7 @@ const JobApply = ({ opportunity, user }) => {
             if (res.ok) {
                 toast.success("Application submitted successfully!");
                 setFormData({ resumeLink: '', portfolioLink: '', additionalNotes: '' });
-                router.push('/dashboard/collaborator/opportunities');
+                router.push('/dashboard/collaborator/applications');
             } else {
                 toast.error("Failed to submit application. Try again.");
             }

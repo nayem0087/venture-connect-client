@@ -6,6 +6,7 @@ import { Button, Spinner } from "@heroui/react";
 import { Star } from '@gravity-ui/icons';
 import { signOut, useSession } from "@/lib/auth-client";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -13,11 +14,17 @@ export default function Navbar() {
   const { data: session, isPending } = useSession();
 
   const user = session?.user;
+  const router = useRouter();
 
   const handleSignOut = async () => {
-    await signOut();
-  };
-
+    try {
+        await signOut(); 
+        router.push('/auth/signin'); 
+    } catch (error) {
+        console.error("Sign out failed", error);
+    }
+  }
+  
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "Browse Startups", href: "/startups" },

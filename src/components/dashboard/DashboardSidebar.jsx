@@ -23,10 +23,10 @@ export async function DashboardSidebar() {
         icon: LayoutHeaderCellsLarge, href: '/dashboard/collaborator', label: "Overview" 
     },
     { 
-        icon: Paperclip, href: '/dashboard/collaborator/opportunities',label: "My Opportunities" 
+        icon: Paperclip, href: '/dashboard/collaborator/applications',label: "My Opportunities" 
     },
     { 
-        icon: ListUl, href: '/dashboard/collaborator/opportunities', label: "Browse Opportunities" 
+        icon: ListUl, href: '/opportunities', label: "Browse Opportunities" 
     },
     { 
         icon: Person, href: '/dashboard/collaborator/profile', label: "Profile" 
