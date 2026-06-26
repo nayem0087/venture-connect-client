@@ -39,7 +39,8 @@ const ManageStartupsPage = () => {
 
     return (
         <div className="p-8 max-w-6xl mx-auto">
-            <h1 className="text-2xl font-bold mb-6">Manage Startups</h1>
+            <h1 className="text-2xl font-bold mb-2">Manage Startups</h1>
+            <p className="text-gray-500 mb-6">{startups.length} startups found</p>
 
             {loading ? (
                 <div className="flex justify-center p-10"><Spinner /></div>
