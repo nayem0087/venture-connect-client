@@ -12,6 +12,8 @@ export async function getAllOpportunities() {
     }
 }
 
+
+
 // Update an opportunity
 export async function updateOpportunity(id, opportunityData) {
     try {

@@ -6,7 +6,7 @@ import { CircleLetterG, Eye, EyeSlash, Person, Envelope, Lock, Picture, Star } f
 import toast, { Toaster } from "react-hot-toast";
 import { authClient } from "@/lib/auth-client";
 import { Radio, RadioGroup } from "@heroui/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { redirect, useRouter, useSearchParams } from "next/navigation";
 
 export default function SignupPage() {
     // States
@@ -44,8 +44,9 @@ export default function SignupPage() {
             toast.error("Password must be at least 6 characters!");
             return;
         }
-
+        
         setIsLoading(true);
+       
 
         
     const plan = role === 'collaborator' ? 'collaborator_free' : 'founder_free';
@@ -78,7 +79,7 @@ export default function SignupPage() {
         try {
             await authClient.signIn.social({
                 provider: "google",
-                callbackURL: "/dashboard",
+                callbackURL: "/",
             });
         } catch (err) {
             toast.error("Google sign-in failed.");
