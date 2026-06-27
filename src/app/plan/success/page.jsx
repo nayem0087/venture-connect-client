@@ -4,184 +4,144 @@ import { Button } from '@heroui/react';
 import { CircleCheck, ArrowRight, ShieldCheck } from '@gravity-ui/icons';
 import Link from 'next/link';
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+
 async function savePaymentToDB(paymentData) {
-  try {
-    const res = await fetch('http://localhost:5000/api/payments', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(paymentData),
-      cache: 'no-store'
-    });
-    return res.ok;
-  } catch (error) {
-    console.error("Database save failed:", error);
-    return false;
-  }
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/payments`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(paymentData),
+            cache: 'no-store'
+        });
+        return res.ok;
+    } catch (error) {
+        console.error("Database save failed:", error);
+        return false;
+    }
+}
+
+async function upgradeToPremium(email) {
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/users/upgrade`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+            cache: 'no-store'
+        });
+        return res.ok;
+    } catch (error) {
+        console.error("Premium upgrade error:", error);
+        return false;
+    }
+}
+
+async function getUserByEmail(email) {
+    try {
+        const res = await fetch(`${BACKEND_URL}/api/users/${email}`, {
+            cache: 'no-store'
+        });
+        if (!res.ok) return null;
+        return await res.json();
+    } catch {
+        return null;
+    }
+}
+
+function getDashboardUrl(role) {
+    if (role === 'founder') return '/dashboard/founder/mystartup/new';
+    if (role === 'collaborator') return '/dashboard/collaborator/applications';
+    return '/dashboard';
+}
+
+function getDashboardLabel(role) {
+    if (role === 'founder') return 'Post Opportunities';
+    if (role === 'collaborator') return 'Go to Dashboard';
+    return 'Go to Dashboard';
 }
 
 export default async function Success({ searchParams }) {
-  // searchParams প্রমিস হ্যান্ডেল করা
-  const params = await searchParams;
-  const session_id = params?.session_id;
+    const params = await searchParams;
+    const session_id = params?.session_id;
 
-  // যদি session_id না থাকে, হোমপেজে পাঠিয়ে দিন
-  if (!session_id) {
-    return redirect('/');
-  }
+    if (!session_id) return redirect('/');
 
-  // স্ট্রাইপ সেশন থেকে ডাটা রিট্রিভ করা
-  const session = await stripe.checkout.sessions.retrieve(session_id, {
-    expand: ['line_items', 'payment_intent']
-  });
-
-  // যদি পেমেন্ট স্ট্যাটাস কমপ্লিট হয়, ডাটা সেভ করুন
-  if (session.status === 'complete') {
-    await savePaymentToDB({
-      email: session.customer_details?.email,
-      name: session.customer_details?.name || 'Customer',
-      amount: session.amount_total ? (session.amount_total / 100).toFixed(2) : '0.00',
-      transactionId: session.payment_intent?.id,
-      status: 'success',
-      createdAt: new Date().toISOString()
+    const session = await stripe.checkout.sessions.retrieve(session_id, {
+        expand: ['line_items', 'payment_intent']
     });
-  } else {
-    // যদি পেমেন্ট কমপ্লিট না হয় (যেমন ওপেন বা এক্সপায়ার্ড), তাহলে রিডাইরেক্ট করুন
-    return redirect('/');
-  }
 
-  const amountTotal = session.amount_total ? (session.amount_total / 100).toFixed(2) : '0.00';
-  const currency = session.currency?.toUpperCase() || 'USD';
+    if (session.status !== 'complete') return redirect('/');
 
-  return (
-    <div className="w-full min-h-screen bg-[#0B0B0F] text-zinc-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full mx-auto relative">
-        <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl" />
+    const customerEmail = session.customer_details?.email;
 
-        <div className="relative bg-zinc-950/40 border border-emerald-500/30 rounded-2xl p-8 text-center shadow-[0_0_50px_-12px_rgba(16,185,129,0.15)] backdrop-blur-md">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-400 mb-6 border border-emerald-500/20">
-            <CircleCheck className="w-8 h-8" />
-          </div>
+    await savePaymentToDB({
+        email: customerEmail,
+        name: session.customer_details?.name || 'Customer',
+        amount: session.amount_total ? (session.amount_total / 100).toFixed(2) : '0.00',
+        transactionId: session.payment_intent?.id,
+        status: 'success',
+        createdAt: new Date().toISOString()
+    });
 
-          <h1 className="text-3xl font-extrabold text-zinc-100">Payment Successful!</h1>
-          <p className="text-zinc-400 mt-2">Thank you for your purchase.</p>
+    if (customerEmail) {
+        await upgradeToPremium(customerEmail);
+    }
 
-          <div className="my-6 p-4 bg-zinc-900/50 border border-zinc-800/80 rounded-xl text-left space-y-2">
-            <div className="flex justify-between text-xs">
-              <span className="text-zinc-500">Amount Paid</span>
-              <span className="font-semibold">{amountTotal} {currency}</span>
+    const user = customerEmail ? await getUserByEmail(customerEmail) : null;
+
+    // FIX: don't default a failed/missing lookup to 'founder' — that was
+    // silently mislabeling every collaborator (and masking the fact that
+    // the lookup was failing at all). Pass the real role through; if it's
+    // undefined, getDashboardUrl/getDashboardLabel already fall back to a
+    // neutral '/dashboard' on their own.
+    const role = user?.role;
+
+    const amountTotal = session.amount_total ? (session.amount_total / 100).toFixed(2) : '0.00';
+    const currency = session.currency?.toUpperCase() || 'USD';
+    const dashboardUrl = getDashboardUrl(role);
+    const dashboardLabel = getDashboardLabel(role);
+
+    return (
+        <div className="w-full min-h-screen bg-[#0B0B0F] text-zinc-50 flex items-center justify-center p-4">
+            <div className="max-w-md w-full mx-auto relative">
+                <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl" />
+
+                <div className="relative bg-zinc-950/40 border border-emerald-500/30 rounded-2xl p-8 text-center shadow-[0_0_50px_-12px_rgba(16,185,129,0.15)] backdrop-blur-md">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-400 mb-6 border border-emerald-500/20">
+                        <CircleCheck className="w-8 h-8" />
+                    </div>
+
+                    <h1 className="text-3xl font-extrabold text-zinc-100">Payment Successful!</h1>
+                    <p className="text-zinc-400 mt-2">
+                        Your account has been upgraded to{" "}
+                        <span className="text-amber-400 font-semibold">Premium ⚡</span>
+                    </p>
+
+                    <div className="my-6 p-4 bg-zinc-900/50 border border-zinc-800/80 rounded-xl text-left space-y-2">
+                        <div className="flex justify-between text-xs">
+                            <span className="text-zinc-500">Amount Paid</span>
+                            <span className="font-semibold">{amountTotal} {currency}</span>
+                        </div>
+                        <div className="flex justify-between text-xs">
+                            <span className="text-zinc-500">Payment Status</span>
+                            <span className="text-emerald-400 flex items-center gap-1">
+                                <ShieldCheck className="w-3.5 h-3.5" /> Verified
+                            </span>
+                        </div>
+                        <div className="flex justify-between text-xs">
+                            <span className="text-zinc-500">Plan</span>
+                            <span className="text-amber-400 font-semibold">Premium (Unlimited)</span>
+                        </div>
+                    </div>
+
+                    <Link href={dashboardUrl} className="block w-full">
+                        <Button className="w-full py-6 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl transition flex items-center justify-center gap-2">
+                            {dashboardLabel} <ArrowRight className="w-4 h-4" />
+                        </Button>
+                    </Link>
+                </div>
             </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-zinc-500">Payment Status</span>
-              <span className="text-emerald-400 flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5" /> Verified
-              </span>
-            </div>
-          </div>
-
-          <Link href="/opportunities" className="block w-full">
-            <Button className="w-full py-6 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl transition">
-              Go to Opportunities <ArrowRight className="w-4 h-4" />
-            </Button>
-          </Link>
         </div>
-      </div>
-    </div>
-  );
+    );
 }
 
-
-
-
-
-
-
-
-
-
-// import { stripe } from '@/lib/stripe'
-// import { redirect } from 'next/navigation'
-// import { Button } from '@heroui/react'
-// import { CircleCheck, ArrowRight, Envelope, ShieldCheck } from '@gravity-ui/icons'
-// import Link from 'next/link'
-
-// export default async function Success({ searchParams }) {
-//   const { session_id } = await searchParams
-
-//   if (!session_id)
-//     throw new Error('Please provide a valid session_id (`cs_test_...`)')
-
-//   const session = await stripe.checkout.sessions.retrieve(session_id, {
-//     expand: ['line_items', 'payment_intent']
-//   })
-
-//   const status = session.status
-//   const customerEmail = session.customer_details?.email
-//   const amountTotal = session.amount_total ? (session.amount_total / 100).toFixed(2) : '0.00'
-//   const currency = session.currency?.toUpperCase() || 'USD'
-
-//   if (status === 'open') {
-//     return redirect('/')
-//   }
-
-//   if (status === 'complete') {
-//     return (
-//       <div className="w-full min-h-screen bg-[#0B0B0F] text-zinc-50 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-//         <div className="max-w-md w-full mx-auto relative">
-          
-//           {/* background aura */}
-//           <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-
-//           {/* main card */}
-//           <div className="relative bg-zinc-950/40 border border-emerald-500/30 rounded-2xl p-6 sm:p-8 text-center shadow-[0_0_50px_-12px_rgba(16,185,129,0.15)] backdrop-blur-md">
-            
-//             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-400 mb-6 border border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-//               <CircleCheck className="w-8 h-8" />
-//             </div>
-
-//             <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-100 tracking-tight">
-//               Payment Successful!
-//             </h1>
-//             <p className="text-zinc-400 mt-2 text-sm sm:text-base">
-//               Thank you for your purchase. Your account has been upgraded.
-//             </p>
-
-//             {/* billing summary box */}
-//             <div className="my-6 p-4 bg-zinc-900/50 border border-zinc-800/80 rounded-xl text-left space-y-2.5">
-//               <div className="flex justify-between text-xs">
-//                 <span className="text-zinc-500">Amount Paid</span>
-//                 <span className="font-semibold text-zinc-200">{amountTotal} {currency}</span>
-//               </div>
-//               <div className="flex justify-between text-xs">
-//                 <span className="text-zinc-500">Payment Status</span>
-//                 <span className="text-emerald-400 font-medium flex items-center gap-1">
-//                   <ShieldCheck className="w-3.5 h-3.5" /> Verified by Stripe
-//                 </span>
-//               </div>
-//             </div>
-
-//             <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed mb-8">
-//               A confirmation email with your official invoice has been sent to{' '}
-//               <span className="text-purple-400 font-medium break-all">{customerEmail}</span>.
-//             </p>
-
-//             <hr className="border-white/5 my-6" />
-
-//             {/* action buttons */}
-//             <div className="space-y-3">
-//               {/* FIXED: Using Next.js Link directly around the Button to prevent Server-to-Client function pass error */}
-//               <Link href="/opportunities" className="block w-full">
-//                 <Button
-//                   className="w-full py-6 bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm rounded-xl transition duration-200 flex items-center justify-center gap-2 shadow-lg shadow-purple-600/20"
-//                 >
-//                   Go to Dashboard
-//                   <ArrowRight className="w-4 h-4" />
-//                 </Button>
-//               </Link>
-//             </div>
-
-//           </div>
-//         </div>
-//       </div>
-//     )
-//   }
-// }

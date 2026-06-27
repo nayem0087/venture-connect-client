@@ -15,7 +15,6 @@ const ApplyPage = async ({ params }) => {
         redirect(`/auth/signin?redirect=/opportunities/${id}/apply`);
     }
 
-    // শুধুমাত্র Collaborator-দের অ্যাপ্লাই করার পারমিশন
     if (user.role !== 'collaborator') {
         return (
             <div className="flex min-h-[60vh] items-center justify-center bg-[#0B0B0F] px-4">
@@ -37,10 +36,9 @@ const ApplyPage = async ({ params }) => {
 
     let opportunity = null;
     let totalAppliedCount = 0;
-    let maxAllowedApplications = 3; // কোনো প্ল্যান না পাওয়া গেলে ৩ ডিফল্ট থাকবে
+    let maxAllowedApplications = 3; 
 
     try {
-        // ১. অপরচুনিটি ডেটা ফেচ করা
         const res = await fetch(`http://localhost:5000/api/opportunities/${id}`, {
             cache: 'no-store' 
         });
@@ -53,7 +51,6 @@ const ApplyPage = async ({ params }) => {
             opportunity = await res.json();
         }
 
-        // ২. ইউজার এ পর্যন্ত কতটি অ্যাপ্লাই করেছে তা বের করা
         const appsRes = await fetch(`http://localhost:5000/api/applications?applicantEmail=${user.email}`, {
             cache: 'no-store'
         });
@@ -64,14 +61,12 @@ const ApplyPage = async ({ params }) => {
             }
         }
 
-        // ৩. ডাইনামিক প্ল্যান লিমিট ফেচ করা
-        // ইউজারের সেশনে থাকা plan_id অথবা ডিফল্ট হিসেবে 'collaborator_free' ব্যবহার করা হচ্ছে
         const userPlanId = user.plan_id || user.plan || 'collaborator_free';
         const planData = await getPlanById(userPlanId);
         
         if (planData && planData.maxOpportunitiesPerMonth) {
             if (planData.maxOpportunitiesPerMonth === 'unlimited') {
-                maxAllowedApplications = Infinity; // আনলিমিটেড হলে ইনফিনিটি সেট হবে
+                maxAllowedApplications = Infinity; 
             } else {
                 maxAllowedApplications = parseInt(planData.maxOpportunitiesPerMonth, 10);
             }
@@ -81,7 +76,6 @@ const ApplyPage = async ({ params }) => {
         console.error("Error fetching data from backend:", error);
     }
 
-    // ইউজার সিঙ্ক এপিআই কল
     try {
         await fetch('http://localhost:5000/api/user', { 
             method: 'POST',
@@ -97,7 +91,6 @@ const ApplyPage = async ({ params }) => {
         console.error("Error syncing user with backend:", error);
     }
 
-    // ডাইনামিক লিমিট কন্ডিশন চেক
     const isLimitExceeded = totalAppliedCount >= maxAllowedApplications;
 
     return (

@@ -1,6 +1,6 @@
 import { getUserSession } from "@/lib/core/session";
 import { LayoutSideContent, EyeDashed, Briefcase, CirclePlus, WeightHanging, LogoTelegram } from "@gravity-ui/icons";
-import { LayoutHeaderCellsLarge, Paperclip, ListUl, Person,  ArrowRightFromSquare } from '@gravity-ui/icons';
+import { LayoutHeaderCellsLarge, Paperclip, ListUl, Person, ArrowRightFromSquare } from '@gravity-ui/icons';
 
 
 import { Button, Drawer } from "@heroui/react";
@@ -18,6 +18,9 @@ export async function DashboardSidebar() {
         { icon: CirclePlus, href: '/dashboard/founder/mystartup/new', label: "Add Opportunity" },
         { icon: WeightHanging, href: '/dashboard/founder/mystartup/new/opportunities', label: "Manage Opportunities" },
         { icon: LogoTelegram, href: '/dashboard/founder/mystartup/new/applications', label: "Applications" },
+        {
+            icon: Person, href: '/dashboard/profile', label: "Profile"
+        }
     ];
 
     const CollaboratorNavLinks = [
@@ -31,7 +34,7 @@ export async function DashboardSidebar() {
             icon: ListUl, href: '/opportunities', label: "Browse Opportunities"
         },
         {
-            icon: Person, href: '/dashboard/collaborator/profile', label: "Profile"
+            icon: Person, href: '/dashboard/profile', label: "Profile"
         }
     ];
 
@@ -56,6 +59,9 @@ export async function DashboardSidebar() {
             href: '/dashboard/admin/transactions',
             label: "Transactions"
         },
+        {
+            icon: Person, href: '/dashboard/profile', label: "Profile"
+        }
     ];
 
     const navLinksMap = {

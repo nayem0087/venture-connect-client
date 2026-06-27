@@ -161,7 +161,6 @@ export default function FounderDashboardHomePage() {
                         </div>
                         <span className="text-xs text-zinc-500 font-medium">Accepted</span>
                     </div>
-
                 </div>
             </div>
         </div>
