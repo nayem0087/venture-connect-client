@@ -2,6 +2,7 @@ import { requireRole } from "@/lib/core/session";
 import MyStartupPage from "./MyStartupPage";
 
 
+
 const MyStartupServerPage = async () => {
     const founder = await requireRole('founder');
     return <MyStartupPage founder={founder} />;

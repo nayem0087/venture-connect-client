@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSession } from "@/lib/auth-client";
 import { Briefcase, Persons, Check } from "@gravity-ui/icons";
-import { Spinner, Button } from "@heroui/react";
+import { Spinner } from "@heroui/react";
 import { getAllApplications, getAllOpportunities } from '@/lib/actions/jobs';
 
 export default function FounderDashboardHomePage() {
@@ -13,23 +13,31 @@ export default function FounderDashboardHomePage() {
 
     useEffect(() => {
         async function fetchDashboardStats() {
+            if (!session?.user?.email) return;
+
             try {
-           
                 const [oppsRes, appsRes] = await Promise.all([
                     getAllOpportunities(),
                     getAllApplications()
                 ]);
 
-                const totalOpps = oppsRes?.success ? oppsRes.data.length : 0;
-                const totalApps = appsRes?.success ? appsRes.data.length : 0;
+                const founderEmail = session.user.email;
+
+                const myOpps = oppsRes?.success 
+                    ? oppsRes.data.filter(o => o.founderEmail === founderEmail) 
+                    : [];
                 
-                const acceptedCount = appsRes?.success 
-                    ? appsRes.data.filter(app => app.status?.toLowerCase() === 'accepted').length 
-                    : 0;
+                const myJobIds = new Set(myOpps.map(o => String(o._id)));
+
+                const myApps = appsRes?.success 
+                    ? appsRes.data.filter(a => myJobIds.has(String(a.opportunityId))) 
+                    : [];
+                
+                const acceptedCount = myApps.filter(app => app.status?.toLowerCase() === 'accepted').length;
 
                 setCounts({
-                    opportunities: totalOpps,
-                    applications: totalApps,
+                    opportunities: myOpps.length,
+                    applications: myApps.length,
                     accepted: acceptedCount
                 });
             } catch (error) {
@@ -58,30 +66,13 @@ export default function FounderDashboardHomePage() {
         <div className="min-h-screen bg-[#0d0d0e] text-white p-6 space-y-6">
             <div>
                 <h2 className="text-3xl font-bold tracking-tight">
-                    Welcome back, {session?.user?.name || "Alice"} 👋
+                    Welcome back, {session?.user?.name || "Founder"} 👋
                 </h2>
                 <p className="text-zinc-500 text-sm mt-1">Here's an overview of your startup activity.</p>
             </div>
 
-            <div className="bg-amber-950/20 border border-amber-900/40 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                    <div className="flex items-center gap-1.5 text-amber-400 font-medium text-sm">
-                        <span>⚡</span> Upgrade to Premium
-                    </div>
-                    <p className="text-zinc-400 text-xs mt-0.5">
-                        You've used all {counts.opportunities} free opportunity slots. Go premium to post unlimited.
-                    </p>
-                </div>
-                <Button 
-                    size="sm" 
-                    className="bg-amber-500 text-black font-semibold rounded-lg px-4 hover:bg-amber-400 text-xs transition"
-                >
-                    Go Premium — $29.99
-                </Button>
-            </div>
-
+            {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                {/* ১. Total Opportunities */}
                 <div className="bg-[#121214] border border-zinc-900/80 rounded-xl p-6 flex items-center gap-4 transition hover:border-zinc-800">
                     <div className="p-3 bg-purple-950/40 border border-purple-900/50 rounded-xl text-purple-400">
                         <Briefcase size={22} />
@@ -113,11 +104,10 @@ export default function FounderDashboardHomePage() {
                 </div>
             </div>
 
+            {/* Activity Chart Section */}
             <div className="bg-[#121214] border border-zinc-900/80 rounded-xl p-6 space-y-6">
                 <h3 className="text-base font-semibold text-zinc-300">Activity Overview</h3>
-
                 <div className="flex h-64 items-end gap-6 border-b border-zinc-800/60 pb-2 px-4 relative">
-
                     <div className="absolute left-0 bottom-2 top-0 flex flex-col justify-between text-[10px] text-zinc-600 pointer-events-none select-none">
                         <span>{maxVal}</span>
                         <span>{Math.round(maxVal * 0.75)}</span>
@@ -126,43 +116,26 @@ export default function FounderDashboardHomePage() {
                         <span>0</span>
                     </div>
 
-                    <div className="flex-1 flex flex-col items-center gap-2 group ml-6">
-                        <div 
-                            style={{ height: `${(counts.opportunities / maxVal) * 100}%` }}
-                            className="w-full max-w-[120px] bg-gradient-to-t from-indigo-600 to-purple-500 rounded-t-lg transition-all duration-500 hover:opacity-80 relative"
-                        >
-                            <span className="absolute -top-20 left-1/2 -translate-x-1/2 text-7xl font-extrabold text-purple-400 opacity-0 group-hover:opacity-100 transition">
-                                {counts.opportunities}
-                            </span>
+                    {[
+                        { val: counts.opportunities, label: "Opportunities", color: "from-indigo-600 to-purple-500", text: "text-purple-400" },
+                        { val: counts.applications, label: "Applications", color: "from-indigo-600 to-purple-500", text: "text-purple-400" },
+                        { val: counts.accepted, label: "Accepted", color: "from-emerald-600 to-teal-500", text: "text-emerald-400" }
+                    ].map((item, idx) => (
+                        <div key={idx} className="flex-1 flex flex-col items-center gap-2 group ml-6">
+                            <div 
+                                style={{ height: `${(item.val / maxVal) * 100}%` }}
+                                className={`w-full max-w-[120px] bg-gradient-to-t ${item.color} rounded-t-lg transition-all duration-500 hover:opacity-80 relative`}
+                            >
+                                <span className={`absolute -top-20 left-1/2 -translate-x-1/2 text-7xl font-extrabold ${item.text} opacity-0 group-hover:opacity-100 transition`}>
+                                    {item.val}
+                                </span>
+                            </div>
+                            <span className="text-xs text-zinc-500 font-medium">{item.label}</span>
                         </div>
-                        <span className="text-xs text-zinc-500 font-medium">Opportunities</span>
-                    </div>
-
-                    <div className="flex-1 flex flex-col items-center gap-2 group">
-                        <div 
-                            style={{ height: `${(counts.applications / maxVal) * 100}%` }}
-                            className="w-full max-w-[120px] bg-gradient-to-t from-indigo-600 to-purple-500 rounded-t-lg transition-all duration-500 hover:opacity-80 relative"
-                        >
-                            <span className="absolute -top-20 left-1/2 -translate-x-1/2 text-7xl font-extrabold text-purple-400 opacity-0 group-hover:opacity-100 transition">
-                                {counts.applications}
-                            </span>
-                        </div>
-                        <span className="text-xs text-zinc-500 font-medium">Applications</span>
-                    </div>
-
-                    <div className="flex-1 flex flex-col items-center gap-2 group">
-                        <div 
-                            style={{ height: `${(counts.accepted / maxVal) * 100}%` }}
-                            className="w-full max-w-[120px] bg-gradient-to-t from-emerald-600 to-teal-500 rounded-t-lg transition-all duration-500 hover:opacity-80 relative"
-                        >
-                            <span className="absolute -top-20 left-1/2 -translate-x-1/2 text-7xl font-extrabold text-emerald-400 opacity-0 group-hover:opacity-100 transition">
-                                {counts.accepted}
-                            </span>
-                        </div>
-                        <span className="text-xs text-zinc-500 font-medium">Accepted</span>
-                    </div>
+                    ))}
                 </div>
             </div>
         </div>
     );
 }
+
