@@ -64,7 +64,7 @@ export async function updateApplicationStatus(id, status) {
     }
 }
 
-// Fetch user by email — success page এ role check এর জন্য
+// Fetch user by email — 
 export async function getUserByEmail(email) {
     try {
         const res = await fetch(`${BACKEND_URL}/api/users/${email}`, {

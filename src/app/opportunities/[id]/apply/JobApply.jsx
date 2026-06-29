@@ -47,13 +47,14 @@ const JobApply = ({ opportunity, user }) => {
             applicantName: user?.name,
             applicantEmail: user?.email,
             applicantImage: user?.image,
+            status: "pending",
             coverLetter: formData.additionalNotes,
             portfolioUrl: formData.portfolioLink,
             resumeUrl: formData.resumeLink,
             appliedAt: new Date()
         };
 
-        console.log('Submitting Application:', applicationData);
+        // console.log('Submitting Application:', applicationData);
 
         try {
             const res = await fetch('http://localhost:5000/api/applications', {

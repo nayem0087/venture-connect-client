@@ -16,7 +16,7 @@ export async function upgradeUserToPremium(email) {
         const data = await res.json();
 
         if (res.ok && data.success) {
-            revalidatePath("/dashboard/founder/mystartup/new/opportunities");
+            revalidatePath("/dashboard/founder/opportunities");
             return { success: true };
         }
 

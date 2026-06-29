@@ -52,7 +52,7 @@ const PricingPlans = () => {
             description: 'Our most popular option for serious active candidates looking to rapidly accelerate landing a role.',
             icon: <Star className="w-5 h-5 text-blue-400" />,
             features: [
-                "Apply to up to 30 jobs per month",
+                "Apply to up to 10 jobs per month",
                 "Unlimited saved jobs",
                 "Real-time application tracking",
                 "Salary & industry insights"

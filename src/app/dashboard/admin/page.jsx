@@ -22,10 +22,9 @@ const AdminDashboardHomePage = () => {
                 const startups = await startupsRes.json();
                 const opportunities = await oppsRes.json();
                 const payments = await paymentsRes.json();
-
-                const oppCount = Array.isArray(opportunities)
-                    ? opportunities.length
-                    : (opportunities?.data ? opportunities.data.length : 0);
+                
+                const oppCount = opportunities?.pagination?.total
+                    ?? (Array.isArray(opportunities?.data) ? opportunities.data.length : 0);
 
                 const totalRevenue = Array.isArray(payments)
                     ? payments.reduce((sum, p) => sum + Number(p.amount || 0), 0)
@@ -87,8 +86,8 @@ const AdminDashboardHomePage = () => {
                                 contentStyle={{
                                     backgroundColor: '#ffffff',
                                     border: 'none',
-                                    borderRadius: '12px',    
-                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' 
+                                    borderRadius: '12px',
+                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                                 }}
                             />
                             <Legend />

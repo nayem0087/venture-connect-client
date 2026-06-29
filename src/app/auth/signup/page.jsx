@@ -65,18 +65,7 @@ export default function SignupPage() {
                 toast.error(error.message || "Something went wrong!");
             } else {
                 toast.success("Account created successfully! 🚀");
-
-                // FIX: router.push() does a soft, client-side navigation —
-                // the Navbar's useSession() relies on better-auth's internal
-                // nanostore signal to know it should refetch, and that
-                // signal isn't firing reliably after signUp.email in this
-                // setup (known quirk: github.com/better-auth/better-auth/issues/858,
-                // issues/1006). Rather than depend on that internal signal,
-                // force a full browser navigation instead. This makes every
-                // client component — including the Navbar — remount from
-                // scratch on the new page, so useSession() does a fresh
-                // fetch against the now-valid session cookie. No refresh
-                // needed, and it isn't dependent on better-auth internals.
+                
                 window.location.href = redirectTo;
             }
         } catch (err) {

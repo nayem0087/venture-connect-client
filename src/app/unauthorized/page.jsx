@@ -37,15 +37,6 @@ export default function UnauthorizedPage() {
 
           {/* Action Buttons */}
           <div className="space-y-3">
-            {/* <Link href="/dashboard" className="block w-full">
-              <Button
-                className="w-full py-6 bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm rounded-xl transition duration-200 flex items-center justify-center gap-2 shadow-lg shadow-purple-600/10"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Return to Dashboard
-              </Button>
-            </Link> */}
-
             <Link href="/" className="block w-full">
               <Button
                 variant="bordered"

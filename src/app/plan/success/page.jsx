@@ -88,12 +88,6 @@ export default async function Success({ searchParams }) {
     }
 
     const user = customerEmail ? await getUserByEmail(customerEmail) : null;
-
-    // FIX: don't default a failed/missing lookup to 'founder' — that was
-    // silently mislabeling every collaborator (and masking the fact that
-    // the lookup was failing at all). Pass the real role through; if it's
-    // undefined, getDashboardUrl/getDashboardLabel already fall back to a
-    // neutral '/dashboard' on their own.
     const role = user?.role;
 
     const amountTotal = session.amount_total ? (session.amount_total / 100).toFixed(2) : '0.00';
