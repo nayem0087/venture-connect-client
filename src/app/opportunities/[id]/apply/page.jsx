@@ -39,7 +39,7 @@ const ApplyPage = async ({ params }) => {
     let maxAllowedApplications = 3; 
 
     try {
-        const res = await fetch(`http://localhost:5000/api/opportunities/${id}`, {
+        const res = await fetch(`https://venture-connect-server.vercel.app/api/opportunities/${id}`, {
             cache: 'no-store' 
         });
 
@@ -51,7 +51,7 @@ const ApplyPage = async ({ params }) => {
             opportunity = await res.json();
         }
 
-        const appsRes = await fetch(`http://localhost:5000/api/applications?applicantEmail=${user.email}`, {
+        const appsRes = await fetch(`https://venture-connect-server.vercel.app/api/applications?applicantEmail=${user.email}`, {
             cache: 'no-store'
         });
         if (appsRes.ok) {
@@ -77,7 +77,7 @@ const ApplyPage = async ({ params }) => {
     }
 
     try {
-        await fetch('http://localhost:5000/api/user', { 
+        await fetch('https://venture-connect-server.vercel.app/api/user', { 
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

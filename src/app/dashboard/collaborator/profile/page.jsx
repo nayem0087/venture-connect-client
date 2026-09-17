@@ -40,7 +40,7 @@ const UserProfile = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await fetch(`https://venture-connect-server.vercel.app/api/users/${formData.email}`, {
+            const res = await fetch(`http://localhost:5000/api/users/${formData.email}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)

@@ -1,171 +1,100 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, Chip, Spinner, Table } from "@heroui/react";
+import { Table, Chip, Card, Spinner } from "@heroui/react";
 
 const TransactionsPage = () => {
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
+    const [transactions, setTransactions] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-  const fetchPayments = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/api/payments");
-      const data = await res.json();
+    const fetchTransactions = async () => {
+        try {
+            // Plain client-side fetch to the Next.js Route Handler at
+            // app/api/transactions/route.js — NOT the 'use server' Server
+            // Action. Server Actions go through an RSC POST wire-protocol
+            // call that is fragile when polled on an interval under
+            // Turbopack dev hot-reload (causes "Failed to fetch").
+            const res = await fetch('/api/transactions', { cache: 'no-store' });
+            if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+            const data = await res.json();
+            setTransactions(data || []);
+        } catch (error) {
+            console.error("Error fetching transactions:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-      setTransactions(
-        Array.isArray(data) ? data.reverse() : []
-      );
-    } catch (error) {
-      console.error("Error fetching payments:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    useEffect(() => {
+        fetchTransactions();
 
-  useEffect(() => {
-    fetchPayments();
+        // রিয়েল-টাইম আপডেটের জন্য প্রতি ১০ সেকেন্ডে রিফ্রেশ
+        const interval = setInterval(fetchTransactions, 10000);
+        return () => clearInterval(interval);
+    }, []);
 
-    const interval = setInterval(fetchPayments, 10000);
+    // টোটাল রেভিনিউ ক্যালকুলেশন
+    const totalRevenue = transactions.reduce((acc, curr) => acc + (parseFloat(curr.amount) || 0), 0);
 
-    return () => clearInterval(interval);
-  }, []);
-
-  const totalRevenue = transactions.reduce(
-    (sum, item) => sum + Number(item.amount || 0),
-    0
-  );
-
-  if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <Spinner size="lg" />
-      </div>
-    );
-  }
+        <div className="p-8 max-w-6xl mx-auto">
+            <h1 className="text-2xl font-bold mb-6 text-gray-900">Transactions</h1>
 
-  return (
-    <div className="max-w-7xl mx-auto p-6">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold">Transactions</h1>
-        <p className="text-default-500 mt-2">
-          Track all payment activities
-        </p>
-      </div>
+            {/* রেভিনিউ কার্ড */}
+            <Card className="p-6 mb-8 w-64 shadow-sm border border-gray-200 rounded-2xl bg-white">
+                <p className="text-sm text-gray-500">Total Revenue</p>
+                <h2 className="text-3xl font-bold text-gray-900">${totalRevenue.toFixed(2)}</h2>
+            </Card>
 
-      <Card className="mb-8 border border-default-200 bg-content1">
-        <div className="p-6 flex items-center gap-4">
-          <div className="size-16 rounded-2xl bg-success/10 flex items-center justify-center">
-            <span className="text-3xl font-bold text-success">$</span>
-          </div>
-
-          <div>
-            <h2 className="text-4xl font-bold">
-              ${totalRevenue.toFixed(2)}
-            </h2>
-            <p className="text-default-500">
-              Total Revenue
-            </p>
-          </div>
+            {loading ? (
+                <div className="flex justify-center p-10"><Spinner /></div>
+            ) : (
+                <Card className="border border-gray-200 rounded-2xl bg-white overflow-hidden">
+                    <Table className="shadow-none">
+                        <Table.ScrollContainer>
+                            <Table.Content aria-label="Transactions table">
+                                <Table.Header>
+                                    <Table.Column id="user">USER</Table.Column>
+                                    <Table.Column id="amount">AMOUNT</Table.Column>
+                                    <Table.Column id="date">DATE</Table.Column>
+                                    <Table.Column id="status">PAYMENT STATUS</Table.Column>
+                                </Table.Header>
+                                <Table.Body
+                                    items={transactions}
+                                    renderEmptyState={() => (
+                                        <p className="text-center py-6 text-gray-500">No transactions to display.</p>
+                                    )}
+                                >
+                                    {(t) => (
+                                        <Table.Row id={t._id}>
+                                            <Table.Cell className="text-gray-700">
+                                                {t.email || t.userEmail}
+                                            </Table.Cell>
+                                            <Table.Cell className="font-medium text-gray-900">
+                                                ${t.amount}
+                                            </Table.Cell>
+                                            <Table.Cell className="text-gray-500">
+                                                {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'N/A'}
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                                <Chip
+                                                    color={t.status === 'failed' ? 'danger' : t.status === 'pending' ? 'warning' : 'success'}
+                                                    variant="flat"
+                                                    size="sm"
+                                                >
+                                                    {t.status || 'Completed'}
+                                                </Chip>
+                                            </Table.Cell>
+                                        </Table.Row>
+                                    )}
+                                </Table.Body>
+                            </Table.Content>
+                        </Table.ScrollContainer>
+                    </Table>
+                </Card>
+            )}
         </div>
-      </Card>
-
-      <Card className="border border-default-200 bg-content1">
-        <Table>
-          <Table.ScrollContainer>
-            <Table.Content aria-label="Transactions table">
-              <Table.Header>
-                <Table.Column isRowHeader>
-                  USER
-                </Table.Column>
-                <Table.Column>
-                  AMOUNT
-                </Table.Column>
-                <Table.Column>
-                  TRANSACTION ID
-                </Table.Column>
-                <Table.Column>
-                  PAID AT
-                </Table.Column>
-                <Table.Column>
-                  STATUS
-                </Table.Column>
-              </Table.Header>
-
-              <Table.Body>
-                {transactions.length > 0 ? (
-                  transactions.map((t) => (
-                    <Table.Row
-                      key={t._id}
-                      id={t._id}
-                    >
-                      <Table.Cell>
-                        <div>
-                          <p className="font-medium">
-                            {t.name || "Unknown User"}
-                          </p>
-                          <p className="text-sm text-default-500">
-                            {t.email || "N/A"}
-                          </p>
-                        </div>
-                      </Table.Cell>
-
-                      <Table.Cell>
-                        <span className="font-semibold text-success">
-                          ${t.amount || "0.00"}
-                        </span>
-                      </Table.Cell>
-
-                      <Table.Cell>
-                        <span className="text-default-500">
-                          {t.transactionId ||
-                            t.tran_id ||
-                            t._id}
-                        </span>
-                      </Table.Cell>
-
-                      <Table.Cell>
-                        {t.createdAt
-                          ? new Date(
-                              t.createdAt
-                            ).toLocaleDateString()
-                          : "N/A"}
-                      </Table.Cell>
-
-                      <Table.Cell>
-                        <Chip
-                          color="success"
-                          variant="flat"
-                          size="sm"
-                        >
-                          {t.status || "Completed"}
-                        </Chip>
-                      </Table.Cell>
-                    </Table.Row>
-                  ))
-                ) : (
-                  <Table.Row id="empty">
-                    <Table.Cell>
-                      No transactions found
-                    </Table.Cell>
-                    <Table.Cell />
-                    <Table.Cell />
-                    <Table.Cell />
-                    <Table.Cell />
-                  </Table.Row>
-                )}
-              </Table.Body>
-            </Table.Content>
-          </Table.ScrollContainer>
-
-          <Table.Footer>
-            <div className="px-4 py-3 text-sm text-default-500">
-              Total Transactions: {transactions.length}
-            </div>
-          </Table.Footer>
-        </Table>
-      </Card>
-    </div>
-  );
+    );
 };
 
 export default TransactionsPage;

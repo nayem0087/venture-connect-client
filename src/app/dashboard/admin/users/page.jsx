@@ -8,7 +8,7 @@ export default function ManageUsers() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/users")
+    fetch("https://venture-connect-server.vercel.app/api/users")
       .then((res) => {
         if (!res.ok) throw new Error("Network error");
         return res.json();
@@ -28,7 +28,7 @@ export default function ManageUsers() {
       currentStatus === "Active" ? "Blocked" : "Active";
 
     try {
-      await fetch(`http://localhost:5000/api/users/${id}`, {
+      await fetch(`https://venture-connect-server.vercel.app/api/users/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

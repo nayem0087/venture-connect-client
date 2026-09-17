@@ -57,7 +57,7 @@ const JobApply = ({ opportunity, user }) => {
         // console.log('Submitting Application:', applicationData);
 
         try {
-            const res = await fetch('http://localhost:5000/api/applications', {
+            const res = await fetch('https://venture-connect-server.vercel.app/api/applications', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

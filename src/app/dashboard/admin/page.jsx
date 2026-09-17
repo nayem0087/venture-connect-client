@@ -12,10 +12,10 @@ const AdminDashboardHomePage = () => {
         const fetchData = async () => {
             try {
                 const [usersRes, startupsRes, oppsRes, paymentsRes] = await Promise.all([
-                    fetch("http://localhost:5000/api/users"),
-                    fetch("http://localhost:5000/api/startups"),
-                    fetch("http://localhost:5000/api/opportunities"),
-                    fetch("http://localhost:5000/api/payments"),
+                    fetch("https://venture-connect-server.vercel.app/api/users"),
+                    fetch("https://venture-connect-server.vercel.app/api/startups"),
+                    fetch("https://venture-connect-server.vercel.app/api/opportunities"),
+                    fetch("https://venture-connect-server.vercel.app/api/payments"),
                 ]);
 
                 const users = await usersRes.json();

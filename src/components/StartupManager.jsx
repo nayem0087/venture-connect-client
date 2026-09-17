@@ -1,4 +1,3 @@
-
 // "use client";
 
 // import React, { useEffect, useState, useTransition } from "react";
@@ -19,7 +18,7 @@
 
 // import { getAllStartups } from "@/lib/api/startup";
 // import { createStartup } from "@/lib/actions/startups";
-// import { updateStartup } from "@/lib/actions/update";
+// import { updateStartup } from "@/lib/actions/industry";
 
 // const textInputClass = "w-full bg-[#1c1c1e] text-white rounded-lg px-3 h-12 outline-none border border-zinc-800 focus:border-zinc-700 transition";
 // const selectBoxClass = "w-full flex flex-col gap-1";
@@ -28,16 +27,13 @@
 // const listItemClasses = "text-zinc-300 px-3 py-2 rounded-md cursor-pointer hover:bg-zinc-900 hover:text-white outline-none data-[focused=true]:bg-zinc-900";
 // const textAreaClass = "w-full bg-[#1c1c1e] text-white rounded-lg p-3 outline-none border border-zinc-800 focus:border-zinc-700 transition resize-none";
 
-// export default function MyStartupPage({ founder }) {
+// export default function MyStartupPage({founder}) {
 //     const [startups, setStartups] = useState([]);
 //     const [loading, setLoading] = useState(true);
 //     const [isEditing, setIsEditing] = useState(false);
 //     const [selectedStartup, setSelectedStartup] = useState(null); 
 //     const [previewImage, setPreviewImage] = useState("");
 //     const [isPending, startTransition] = useTransition();
-
-//     const [selectedIndustry, setSelectedIndustry] = useState("tech");
-//     const [selectedFunding, setSelectedFunding] = useState("seed");
 
 //     // 🌐 ImgBB Upload States
 //     const [logoUrl, setLogoUrl] = useState('');
@@ -72,6 +68,7 @@
 //         }
 
 //         setPreviewImage(URL.createObjectURL(file));
+
 //         setIsUploading(true);
 //         const formData = new FormData();
 //         formData.append('image', file);
@@ -107,46 +104,48 @@
 //         const formData = new FormData(e.currentTarget);
         
 //         startTransition(async () => {
-//             if (selectedStartup?._id) {
-  
-//                 const updateData = {
-//                     name: formData.get("name") ? String(formData.get("name")) : "",
-//                     industry: String(selectedIndustry), 
-//                     funding: String(selectedFunding), 
-//                     email: formData.get("email") ? String(formData.get("email")) : "",
-//                     logo: logoUrl || selectedStartup?.logo || "", 
-//                     description: formData.get("description") ? String(formData.get("description")) : ""
-//                 };
+//     if (selectedStartup?._id) {
+        
+//         const industryValue = formData.get("industry");
+//         const fundingValue = formData.get("funding");
 
-//                 console.log("From frontend to backend update data:", updateData);
+//         const updateData = {
+//             name: formData.get("name") ? String(formData.get("name")) : "",
+//             industry: industryValue ? String(industryValue) : "tech",
+//             funding: fundingValue ? String(fundingValue) : "seed",
+//             email: formData.get("email") ? String(formData.get("email")) : "",
+//             logo: logoUrl || selectedStartup?.logo || "", 
+//             description: formData.get("description") ? String(formData.get("description")) : ""
+//         };
 
-//                 const res = await updateStartup(selectedStartup._id, updateData);
-                
-//                 if (res && res.success) {
-//                     toast.success("Startup updated successfully!");
-//                     setIsEditing(false);
-//                     setSelectedStartup(null);
-//                     setLogoUrl(''); 
-//                     fetchStartups(); 
-//                 } else {
-//                     toast.error(res?.error || "Something went wrong during update!");
-//                 }
+//         console.log("from frontend to backend data :", updateData);
+
+//         const res = await updateStartup(selectedStartup._id, updateData);
+        
+//         if (res.success) {
+//             toast.success("Startup updated successfully!");
+//             setIsEditing(false);
+//             setSelectedStartup(null);
+//             setLogoUrl(''); 
+//             fetchStartups(); 
+//         } else {
+//             toast.error(res.error || "Something went wrong!");
+//         }
 //             } else {
-               
 //                 const newStartupObj = {
-//                     name: formData.get("name") ? String(formData.get("name")) : "",
-//                     industry: String(selectedIndustry),
-//                     funding: String(selectedFunding),
-//                     email: formData.get("email") ? String(formData.get("email")) : "",
-//                     description: formData.get("description") ? String(formData.get("description")) : "",
+//                     name: formData.get("name"),
+//                     industry: formData.get("industry") || "tech",
+//                     funding: formData.get("funding") || "seed",
+//                     email: formData.get("email"),
+//                     description: formData.get("description"),
 //                     logo: logoUrl || "", 
 //                     status: "pending",
-//                     founderId: founder?.id || founder?._id, // Safe fallback id matching
+//                     founderId: founder.id,
 //                 };
-//                 console.log('New Startup Obj:', newStartupObj);
+//                 console.log('new startup obj', newStartupObj);
 
 //                 const res = await createStartup(newStartupObj);
-//                 if (res && (res.insertedId || res.success)) {
+//                 if (res.insertedId) {
 //                     toast.success("Startup registered successfully!");
 //                     setIsEditing(false);
 //                     setLogoUrl('');
@@ -162,8 +161,6 @@
 //         setSelectedStartup(null);
 //         setPreviewImage("");
 //         setLogoUrl('');
-//         setSelectedIndustry("tech");
-//         setSelectedFunding("seed");
 //         setIsEditing(true);
 //     };
 
@@ -171,13 +168,12 @@
 //         setSelectedStartup(startupItem);
 //         setPreviewImage(startupItem.logo || "");
 //         setLogoUrl(startupItem.logo || "");
-//         setSelectedIndustry(startupItem.industry || "tech");
-//         setSelectedFunding(startupItem.funding || "seed");
 //         setIsEditing(true);
 //     };
 
 //     if (loading) return <Loading />;
 
+  
 //     if (startups.length === 0 && !isEditing) {
 //         return (
 //             <div className="min-h-[80vh] flex items-center justify-center px-4">
@@ -202,6 +198,7 @@
 //         );
 //     }
 
+    
 //     if (startups.length > 0 && !isEditing) {
 //         return (
 //             <div className="p-4 md:p-10 min-h-screen w-full bg-[#0d0d0e] text-white">
@@ -290,6 +287,7 @@
 //         );
 //     }
 
+   
 //     return (
 //         <div className="min-h-screen bg-[#0d0d0e] text-white py-12 px-4">
 //             <div className="max-w-2xl mx-auto">
@@ -339,12 +337,10 @@
 
 //                         {/* Industry & Funding Select Options */}
 //                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            
 //                             <Select 
 //                                 name="industry" 
 //                                 className={selectBoxClass}
-//                                 selectedKeys={[selectedIndustry]}
-//                                 onSelectionChange={(keys) => setSelectedIndustry(Array.from(keys)[0])}
+//                                 defaultSelectedKeys={[selectedStartup?.industry || "tech"]}
 //                             >
 //                                 <Label className="text-zinc-400 text-sm mb-1 block">Industry *</Label>
 //                                 <Select.Trigger className={triggerClasses}>
@@ -363,8 +359,7 @@
 //                             <Select 
 //                                 name="funding" 
 //                                 className={selectBoxClass}
-//                                 selectedKeys={[selectedFunding]}
-//                                 onSelectionChange={(keys) => setSelectedFunding(Array.from(keys)[0])}
+//                                 defaultSelectedKeys={[selectedStartup?.funding || "seed"]}
 //                             >
 //                                 <Label className="text-zinc-400 text-sm mb-1 block">Funding Stage *</Label>
 //                                 <Select.Trigger className={triggerClasses}>

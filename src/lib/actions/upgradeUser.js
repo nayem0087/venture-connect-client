@@ -3,7 +3,7 @@
 
 import { revalidatePath } from "next/cache";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://venture-connect-server.vercel.app';
 
 export async function upgradeUserToPremium(email) {
     try {

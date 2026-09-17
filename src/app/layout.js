@@ -22,10 +22,27 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      data-theme="dark"
-      className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <head>
+        {/* Runs before paint so there's no flash of the wrong theme */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function () {
+                try {
+                  var stored = localStorage.getItem('theme');
+                  var theme = stored === 'light' ? 'light' : 'dark';
+                  document.documentElement.classList.toggle('dark', theme === 'dark');
+                  document.documentElement.setAttribute('data-theme', theme);
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className="min-h-full flex flex-col bg-white dark:bg-[#0B0B0F] transition-colors duration-300">
         <Navbar />
         {children}
         <Footer />

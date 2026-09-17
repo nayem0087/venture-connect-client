@@ -12,7 +12,7 @@ export async function updateStartup(id, updateData) {
             return { success: false, error: "No data provided for update." };
         }
 
-        const response = await fetch(`http://localhost:5000/api/startups/${id}`, {
+        const response = await fetch(`https://venture-connect-server.vercel.app/api/startups/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

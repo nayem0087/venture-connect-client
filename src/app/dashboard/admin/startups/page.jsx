@@ -8,7 +8,7 @@ const ManageStartupsPage = () => {
     const [loading, setLoading] = useState(true);
 
     const fetchStartups = () => {
-        fetch(`http://localhost:5000/api/startups`)
+        fetch(`https://venture-connect-server.vercel.app/api/startups`)
             .then(res => res.json())
             .then(data => {
                 setStartups(data);
@@ -22,7 +22,7 @@ const ManageStartupsPage = () => {
 
     const handleAction = async (id, actionType) => {
         if (actionType === 'Approved') {
-            await fetch(`http://localhost:5000/api/startups/${id}`, {
+            await fetch(`https://venture-connect-server.vercel.app/api/startups/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: 'Approved' })
@@ -30,7 +30,7 @@ const ManageStartupsPage = () => {
             fetchStartups();
         } 
         else if (actionType === 'Rejected') {
-            await fetch(`http://localhost:5000/api/startups/${id}`, {
+            await fetch(`https://venture-connect-server.vercel.app/api/startups/${id}`, {
                 method: 'DELETE'
             });
             setStartups(startups.filter(s => s._id !== id));

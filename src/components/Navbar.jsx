@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Avatar, Button, Spinner, Dropdown, Label, Separator } from "@heroui/react";
 import { Star, ChevronDown, ArrowRightFromSquare } from '@gravity-ui/icons';
-import { LayoutDashboard, User as UserIcon } from "lucide-react";
+import { LayoutDashboard, User as UserIcon, Sun, Moon } from "lucide-react";
 import { signOut, useSession } from "@/lib/auth-client";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -23,9 +23,25 @@ export default function Navbar() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: session, isPending } = useSession();
+  const [theme, setTheme] = useState("dark");
 
   const user = session?.user;
   const router = useRouter();
+
+  // Default theme = dark. Only switches to light if user explicitly saved "light" before.
+  useEffect(() => {
+    const stored = localStorage.getItem("theme");
+    const initial = stored === "light" ? "light" : "dark";
+    setTheme(initial);
+    document.documentElement.classList.toggle("dark", initial === "dark");
+  }, []);
+
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    localStorage.setItem("theme", next);
+    document.documentElement.classList.toggle("dark", next === "dark");
+  };
 
   const handleSignOut = async () => {
     try {
@@ -51,7 +67,7 @@ export default function Navbar() {
   const dashboardHref = dashboardLinks[user?.role || 'collaborator'];
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#0B0B0F]/80 backdrop-blur-xl">
+    <nav className="sticky top-0 z-50 border-b border-black/10 dark:border-white/10 bg-white/80 dark:bg-[#0B0B0F]/80 backdrop-blur-xl transition-colors duration-300">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
 
         {/* LOGO */}
@@ -60,7 +76,7 @@ export default function Navbar() {
             <span className="text-xl font-bold text-white"><Star /></span>
           </div>
           <div className="hidden leading-none sm:block">
-            <h1 className="text-3xl font-bold text-white">
+            <h1 className="text-3xl font-bold text-black dark:text-white">
               Venture<span className="text-purple-500">Connect</span>
             </h1>
           </div>
@@ -71,7 +87,7 @@ export default function Navbar() {
           <div className="hidden items-center gap-6 md:flex">
 
             {/* Nav Links Container (DESKTOP ACTIVE BG FIX) */}
-            <ul className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-2">
+            <ul className="flex items-center gap-1 rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 px-3 py-2">
               {navLinks.map((link) => {
 
                 const isActive = link.href === '/'
@@ -85,7 +101,7 @@ export default function Navbar() {
                       className={`rounded-full px-4 py-2 text-sm font-medium transition duration-200
                         ${isActive
                           ? 'bg-purple-600 text-white font-semibold'
-                          : 'text-gray-300 hover:bg-white/10 hover:text-white'
+                          : 'text-gray-600 dark:text-gray-300 hover:bg-black/10 dark:hover:bg-white/10 hover:text-black dark:hover:text-white'
                         }`}
                     >
                       {link.label}
@@ -96,7 +112,20 @@ export default function Navbar() {
             </ul>
 
             {/* Vertical Separation Token Line */}
-            <div className="h-6 w-px bg-white/20" />
+            <div className="h-6 w-px bg-black/20 dark:bg-white/20" />
+
+            {/* THEME TOGGLE BUTTON */}
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle dark/light mode"
+              className="flex items-center justify-center rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 p-2.5 text-gray-600 dark:text-gray-300 transition hover:bg-black/10 dark:hover:bg-white/10 hover:text-black dark:hover:text-white"
+            >
+              {theme === "dark" ? (
+                <Sun className="size-4" />
+              ) : (
+                <Moon className="size-4" />
+              )}
+            </button>
 
             {/* Desktop Authentication Mapping Pipeline */}
             <div className="flex items-center gap-4">
@@ -108,17 +137,17 @@ export default function Navbar() {
                 // Avatar + name is the ENTIRE clickable trigger. Click opens
                 // the dropdown — matches the reference design.
                 <Dropdown placement="bottom-end">
-                  <Dropdown.Trigger className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 pl-1.5 pr-3 py-1 transition-colors cursor-pointer outline-none">
+                  <Dropdown.Trigger className="flex items-center gap-2 rounded-full border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 pl-1.5 pr-3 py-1 transition-colors cursor-pointer outline-none">
                     <Avatar size="sm">
                       <Avatar.Image referrerPolicy="no-referrer" src={user?.image} alt={user?.name} />
                       <Avatar.Fallback className="font-bold text-sm uppercase bg-violet-600 text-white flex items-center justify-center w-full h-full">
                         {getInitials(user?.name)}
                       </Avatar.Fallback>
                     </Avatar>
-                    <span className="text-sm font-semibold text-white">
+                    <span className="text-sm font-semibold text-black dark:text-white">
                       {user.name ? user.name.split(" ")[0] : "User"}
                     </span>
-                    <ChevronDown className="size-3.5 text-gray-400" />
+                    <ChevronDown className="size-3.5 text-gray-500 dark:text-gray-400" />
                   </Dropdown.Trigger>
 
                   <Dropdown.Popover>
@@ -148,7 +177,7 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/auth/signin"
-                    className="text-sm font-medium text-violet-400 transition hover:text-violet-300"
+                    className="text-sm font-medium text-violet-500 dark:text-violet-400 transition hover:text-violet-400 dark:hover:text-violet-300"
                   >
                     Sign In
                   </Link>
@@ -164,28 +193,43 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* MOBILE NAVIGATION HAMBURGER CONTROLLER */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="flex items-center justify-center rounded-lg p-2 text-white transition hover:bg-white/10 md:hidden"
-            aria-label="Toggle Menu"
-          >
-            {isMenuOpen ? (
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            )}
-          </button>
+          {/* MOBILE: theme toggle + hamburger */}
+          <div className="flex items-center gap-2 md:hidden">
+            <button
+              onClick={toggleTheme}
+              aria-label="Toggle dark/light mode"
+              className="flex items-center justify-center rounded-lg p-2 text-black dark:text-white transition hover:bg-black/10 dark:hover:bg-white/10"
+            >
+              {theme === "dark" ? (
+                <Sun className="size-5" />
+              ) : (
+                <Moon className="size-5" />
+              )}
+            </button>
+
+            {/* MOBILE NAVIGATION HAMBURGER CONTROLLER */}
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="flex items-center justify-center rounded-lg p-2 text-black dark:text-white transition hover:bg-black/10 dark:hover:bg-white/10"
+              aria-label="Toggle Menu"
+            >
+              {isMenuOpen ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
       {/* RESPONSIVE MOBILE NAVIGATION EXPANSION DRAWER */}
       {isMenuOpen && (
-        <div className="border-t border-white/10 bg-[#0B0B0F] md:hidden animate-in fade-in slide-in-from-top-5 duration-200">
+        <div className="border-t border-black/10 dark:border-white/10 bg-white dark:bg-[#0B0B0F] md:hidden animate-in fade-in slide-in-from-top-5 duration-200 transition-colors">
           <div className="space-y-3 px-4 py-6">
 
             {/* Nav Menu Lists (MOBILE ACTIVE BG FIX) */}
@@ -202,7 +246,7 @@ export default function Navbar() {
                       className={`block rounded-xl px-4 py-3 text-base font-medium transition duration-200
                         ${isActive
                           ? 'bg-purple-600 text-white font-semibold'
-                          : 'text-gray-300 hover:bg-white/5 hover:text-white'
+                          : 'text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white'
                         }`}
                       onClick={() => setIsMenuOpen(false)}
                     >
@@ -214,7 +258,7 @@ export default function Navbar() {
             </ul>
 
             {/* Conditional Mobile Footer Area */}
-            <div className="border-t border-white/10 pt-4">
+            <div className="border-t border-black/10 dark:border-white/10 pt-4">
               <div className="flex flex-col gap-3">
                 {isPending ? (
                   <div className="text-center py-2 text-gray-500 text-sm">Loading session layer...</div>
@@ -228,14 +272,14 @@ export default function Navbar() {
                         </Avatar.Fallback>
                       </Avatar>
                       <div>
-                        <p className="text-xs text-gray-400">Signed in as</p>
-                        <p className="text-sm font-semibold text-white">{user.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Signed in as</p>
+                        <p className="text-sm font-semibold text-black dark:text-white">{user.name}</p>
                       </div>
                     </div>
 
                     <Link
                       href={dashboardHref}
-                      className="flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white"
+                      className="flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <LayoutDashboard className="size-4" />
@@ -243,7 +287,7 @@ export default function Navbar() {
                     </Link>
                     <Link
                       href="/dashboard/profile"
-                      className="flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white"
+                      className="flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 hover:text-black dark:hover:text-white"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <UserIcon className="size-4" />
@@ -254,7 +298,7 @@ export default function Navbar() {
                       fullWidth
                       onClick={handleSignOut}
                       variant="flat"
-                      className="h-12 border border-white/10 bg-white/5 text-white hover:bg-white/10 rounded-xl font-medium"
+                      className="h-12 border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 text-black dark:text-white hover:bg-black/10 dark:hover:bg-white/10 rounded-xl font-medium"
                     >
                       Sign Out
                     </Button>
@@ -263,7 +307,7 @@ export default function Navbar() {
                   <>
                     <Link
                       href="/auth/signin"
-                      className="rounded-xl px-4 py-3 text-base font-medium text-violet-400 transition hover:bg-white/5 text-center border border-violet-500/10 bg-violet-500/5"
+                      className="rounded-xl px-4 py-3 text-base font-medium text-violet-500 dark:text-violet-400 transition hover:bg-black/5 dark:hover:bg-white/5 text-center border border-violet-500/10 bg-violet-500/5"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Sign In
@@ -272,7 +316,7 @@ export default function Navbar() {
                     <Button
                       as={Link}
                       href="/signup"
-                      className="h-12 bg-white font-semibold text-black hover:bg-gray-200 transition-colors"
+                      className="h-12 bg-black dark:bg-white font-semibold text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
                       radius="lg"
                       onClick={() => setIsMenuOpen(false)}
                     >

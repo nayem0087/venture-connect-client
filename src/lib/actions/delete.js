@@ -11,7 +11,7 @@ export async function deleteStartup(id) {
             return { success: false, error: "Missing startup ID." };
         }
 
-        const response = await fetch(`http://localhost:5000/api/startups/${id}`, {
+        const response = await fetch(`https://venture-connect-server.vercel.app/api/startups/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",

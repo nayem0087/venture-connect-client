@@ -4,7 +4,7 @@ import { Button } from '@heroui/react';
 import { CircleCheck, ArrowRight, ShieldCheck } from '@gravity-ui/icons';
 import Link from 'next/link';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://venture-connect-server.vercel.app';
 
 async function savePaymentToDB(paymentData) {
     try {

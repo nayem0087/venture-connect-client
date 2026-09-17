@@ -132,8 +132,8 @@ PORT=5000
 **`venture-connect-client/.env.local`**
 
 ```env
-NEXT_PUBLIC_BASE_URL=http://localhost:5000
-NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
+NEXT_PUBLIC_BASE_URL=https://venture-connect-server.vercel.app
+NEXT_PUBLIC_BACKEND_URL=https://venture-connect-server.vercel.app
 NEXT_PUBLIC_IMAGE_UPLOAD_API=your_imgbb_api_key
 
 BETTER_AUTH_SECRET=your_better_auth_secret
@@ -164,8 +164,8 @@ npm run dev
 
 The app will be available at:
 
-- **Frontend:** [http://localhost:3000](http://localhost:3000)
-- **Backend API:** [http://localhost:5000](http://localhost:5000)
+- **Frontend:** [https://venture-connect-client.vercel.app](https://venture-connect-client.vercel.app)
+- **Backend API:** [https://venture-connect-server.vercel.app](https://venture-connect-server.vercel.app)
 
 ---
 
