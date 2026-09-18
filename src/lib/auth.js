@@ -7,9 +7,16 @@ const db = client.db(process.env.AUTH_DB_NAME);
 
 export const auth = betterAuth({
   database: mongodbAdapter(db, { client }),
-  
-  emailAndPassword: { 
-    enabled: true, 
+
+  baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+
+  trustedOrigins: [
+    "http://localhost:3000",
+    process.env.NEXT_PUBLIC_APP_URL, // your deployed Next.js app URL, e.g. https://venture-connect-client.vercel.app
+  ].filter(Boolean),
+
+  emailAndPassword: {
+    enabled: true,
   },
 
   socialProviders: {

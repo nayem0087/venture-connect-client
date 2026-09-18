@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Loading from '@/components/Loading';
+import MatchScoreBadge from '@/components/Matchscorebadge';
+
 
 const Page = () => {
     const [startups, setStartups] = useState([]);
@@ -61,26 +63,32 @@ const Page = () => {
 
             {loading ? <div className="text-center"><Loading /></div> : (
                 <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {startups.map((startup) => (
-                        <motion.div
-                            key={startup._id.$oid || startup._id}
-                            whileHover={{ y: -8, borderColor: "#a855f7" }}
-                            className="bg-[#0d0d0e] border border-zinc-800 rounded-3xl p-8"
-                        >
-                            <div className="flex items-start gap-4 mb-4">
-                                <img src={startup.logo} alt={startup.name} className="w-14 h-14 rounded-xl object-cover bg-zinc-900 border border-zinc-800" />
-                                <div>
-                                    <h2 className="text-xl font-bold">{startup.name}</h2>
-                                    <p className="text-xs text-zinc-500 font-mono">{startup.email}</p>
+                    {startups.map((startup) => {
+                        const startupId = startup._id?.$oid || startup._id;
+                        return (
+                            <motion.div
+                                key={startupId}
+                                whileHover={{ y: -8, borderColor: "#a855f7" }}
+                                className="bg-[#0d0d0e] border border-zinc-800 rounded-3xl p-8"
+                            >
+                                <div className="flex items-start gap-4 mb-4">
+                                    <img src={startup.logo} alt={startup.name} className="w-14 h-14 rounded-xl object-cover bg-zinc-900 border border-zinc-800" />
+                                    <div>
+                                        <h2 className="text-xl font-bold">{startup.name}</h2>
+                                        <p className="text-xs text-zinc-500 font-mono">{startup.email}</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <p className="text-zinc-400 text-sm mb-6 line-clamp-3">{startup.description}</p>
-                            <div className="pt-4 border-t border-zinc-800 flex gap-2">
-                                <span className="px-3 py-1 bg-zinc-900 rounded-lg text-[11px] text-zinc-400 border border-zinc-800 uppercase">{startup.industry}</span>
-                                <span className="px-3 py-1 bg-purple-950/20 rounded-lg text-[11px] text-purple-400 border border-purple-900/30 uppercase">{startup.funding}</span>
-                            </div>
-                        </motion.div>
-                    ))}
+                                <p className="text-zinc-400 text-sm mb-6 line-clamp-3">{startup.description}</p>
+                                <div className="pt-4 border-t border-zinc-800 flex gap-2 mb-4">
+                                    <span className="px-3 py-1 bg-zinc-900 rounded-lg text-[11px] text-zinc-400 border border-zinc-800 uppercase">{startup.industry}</span>
+                                    <span className="px-3 py-1 bg-purple-950/20 rounded-lg text-[11px] text-purple-400 border border-purple-900/30 uppercase">{startup.funding}</span>
+                                </div>
+
+                                {/* AI Smart Match — only visible to logged-in investors */}
+                                <MatchScoreBadge startupId={startupId} />
+                            </motion.div>
+                        );
+                    })}
                 </motion.div>
             )}
         </div>
