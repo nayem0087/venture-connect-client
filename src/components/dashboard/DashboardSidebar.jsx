@@ -5,6 +5,7 @@ import { LayoutHeaderCellsLarge, Paperclip, ListUl, Person, ArrowRightFromSquare
 
 import { Button, Drawer } from "@heroui/react";
 import { admin } from "better-auth/plugins";
+import { Heart } from "lucide-react";
 import Link from "next/link";
 
 export async function DashboardSidebar() {
@@ -32,6 +33,9 @@ export async function DashboardSidebar() {
         },
         {
             icon: ListUl, href: '/opportunities', label: "Browse Opportunities"
+        },
+        {
+            icon: Heart, href: "/dashboard/saved", label: "Save Startups"
         },
         {
             icon: Person, href: '/dashboard/profile', label: "Profile"

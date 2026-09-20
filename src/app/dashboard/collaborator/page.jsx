@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Briefcase, TrendingUp, User } from 'lucide-react'; 
+import { Briefcase, TrendingUp, User, Heart } from 'lucide-react'; 
 
 const DashboardPage = () => {
     const cards = [
@@ -15,6 +15,12 @@ const DashboardPage = () => {
             description: "Track your application status",
             icon: <TrendingUp className="w-8 h-8 text-green-400" />,
             href: "/dashboard/collaborator/applications"
+        },
+        {
+            title: "Saved Items",
+            description: "Startups you've bookmarked",
+            icon: <Heart className="w-8 h-8 text-pink-400" />,
+            href: "/dashboard/saved"
         },
         {
             title: "Update Profile",

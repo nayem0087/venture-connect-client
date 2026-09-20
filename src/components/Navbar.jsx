@@ -8,8 +8,6 @@ import { LayoutDashboard, User as UserIcon, Sun, Moon } from "lucide-react";
 import { signOut, useSession } from "@/lib/auth-client";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
-import NotificationBell from "./Notificationbell";
-
 
 function getInitials(name) {
   if (!name) return "U";
@@ -129,9 +127,6 @@ export default function Navbar() {
               )}
             </button>
 
-            {/* NOTIFICATION BELL — only renders when a user is logged in */}
-            <NotificationBell />
-
             {/* Desktop Authentication Mapping Pipeline */}
             <div className="flex items-center gap-4">
               {isPending ? (
@@ -198,10 +193,8 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* MOBILE: notifications + theme toggle + hamburger */}
+          {/* MOBILE: theme toggle + hamburger */}
           <div className="flex items-center gap-2 md:hidden">
-            <NotificationBell />
-
             <button
               onClick={toggleTheme}
               aria-label="Toggle dark/light mode"

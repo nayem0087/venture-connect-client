@@ -3,19 +3,24 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Loading from '@/components/Loading';
 import MatchScoreBadge from '@/components/Matchscorebadge';
-
+import BookmarkButton from '@/components/BookmarkButton';
+import { useSession } from '@/lib/auth-client';
 
 const Page = () => {
+    const { data: session } = useSession();
+    const user = session?.user;
+
     const [startups, setStartups] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [industry, setIndustry] = useState('All');
+    const [bookmarkedIds, setBookmarkedIds] = useState(new Set());
 
     const fetchStartups = async () => {
         setLoading(true);
         const query = new URLSearchParams({ search, industry }).toString();
         const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/startups?${query}`;
-        
+
         try {
             const res = await fetch(url);
             const data = await res.json();
@@ -33,6 +38,29 @@ const Page = () => {
         return () => clearTimeout(handler);
     }, [search, industry]);
 
+    // Fetch which startups this user has already bookmarked, so hearts render filled correctly.
+    useEffect(() => {
+        const loadBookmarkIds = async () => {
+            if (!user?.email) {
+                setBookmarkedIds(new Set());
+                return;
+            }
+            try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/bookmarks/ids?email=${encodeURIComponent(user.email)}`);
+                const data = await res.json();
+                if (data.success) {
+                    const ids = data.bookmarks
+                        .filter((b) => b.itemType === 'startup')
+                        .map((b) => b.itemId);
+                    setBookmarkedIds(new Set(ids));
+                }
+            } catch (e) {
+                // silent fail — hearts just default to outline
+            }
+        };
+        loadBookmarkIds();
+    }, [user?.email]);
+
     return (
         <div className="min-h-screen bg-black text-white p-6 md:p-16">
             <div className="text-center pb-8">
@@ -42,14 +70,14 @@ const Page = () => {
                 <p className="text-zinc-400 text-lg">Connecting with all innovative teams scaling their vision.</p>
 
                 <div className="flex flex-wrap justify-center gap-4 mt-8">
-                    <input 
-                        type="text" 
-                        placeholder="Search by name or description..." 
+                    <input
+                        type="text"
+                        placeholder="Search by name or description..."
                         className="bg-[#0d0d0e] border border-zinc-800 rounded-xl px-4 py-3 w-full max-w-sm outline-none focus:border-purple-500 transition-all"
-                        value={search} 
+                        value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
-                    <select 
+                    <select
                         className="bg-[#0d0d0e] border border-zinc-800 rounded-xl px-4 py-3 outline-none"
                         onChange={(e) => setIndustry(e.target.value)}
                     >
@@ -69,9 +97,18 @@ const Page = () => {
                             <motion.div
                                 key={startupId}
                                 whileHover={{ y: -8, borderColor: "#a855f7" }}
-                                className="bg-[#0d0d0e] border border-zinc-800 rounded-3xl p-8"
+                                className="relative bg-[#0d0d0e] border border-zinc-800 rounded-3xl p-8"
                             >
-                                <div className="flex items-start gap-4 mb-4">
+                                {/* BOOKMARK HEART — top-right corner of the card */}
+                                <div className="absolute top-5 right-5">
+                                    <BookmarkButton
+                                        itemId={startupId}
+                                        itemType="startup"
+                                        initialBookmarked={bookmarkedIds.has(startupId)}
+                                    />
+                                </div>
+
+                                <div className="flex items-start gap-4 mb-4 pr-10">
                                     <img src={startup.logo} alt={startup.name} className="w-14 h-14 rounded-xl object-cover bg-zinc-900 border border-zinc-800" />
                                     <div>
                                         <h2 className="text-xl font-bold">{startup.name}</h2>
