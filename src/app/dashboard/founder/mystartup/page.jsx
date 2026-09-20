@@ -1,6 +1,7 @@
 import React from 'react';
-import MyStartupPage from './MyStartup';
+
 import { getUserSession } from '@/lib/core/session';
+import MyStartupPage from './MyStartupPage';
 
 const StartupPage = async() => {
 
