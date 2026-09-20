@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Briefcase, TrendingUp, User, Heart } from 'lucide-react'; 
+import { Briefcase, Heart, TrendingUp, User } from 'lucide-react';
 
 const DashboardPage = () => {
     const cards = [
@@ -17,10 +17,16 @@ const DashboardPage = () => {
             href: "/dashboard/collaborator/applications"
         },
         {
-            title: "Saved Items",
+            title: "Saved Startups",
             description: "Startups you've bookmarked",
             icon: <Heart className="w-8 h-8 text-pink-400" />,
-            href: "/dashboard/saved"
+            href: "/dashboard/saved/startups"
+        },
+        {
+            title: "Saved Opportunities",
+            description: "Opportunities you've bookmarked",
+            icon: <Heart className="w-8 h-8 text-pink-400" />,
+            href: "/dashboard/saved/opportunities"
         },
         {
             title: "Update Profile",
@@ -41,8 +47,8 @@ const DashboardPage = () => {
             {/* Cards Section */}
             <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
                 {cards.map((card, index) => (
-                    <Link 
-                        key={index} 
+                    <Link
+                        key={index}
                         href={card.href}
                         className="bg-[#131224] p-8 rounded-2xl border border-white/10 hover:border-violet-500/50 transition-all duration-300 flex flex-col items-center text-center space-y-4 hover:shadow-[0_0_20px_rgba(139,92,246,0.15)]"
                     >

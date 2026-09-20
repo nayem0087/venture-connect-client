@@ -35,7 +35,7 @@ export async function DashboardSidebar() {
             icon: ListUl, href: '/opportunities', label: "Browse Opportunities"
         },
         {
-            icon: Heart, href: "/dashboard/saved", label: "Save Startups"
+            icon: Heart, href: "/dashboard/saved/startups", label: "Save Items"
         },
         {
             icon: Person, href: '/dashboard/profile', label: "Profile"
