@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@heroui/react";
 import { Rocket, Person, Target, ShieldCheck, ArrowRight } from "@gravity-ui/icons";
+import { gsap } from "gsap";
 
 export default function Protocol() {
   const [activeTab, setActiveTab] = useState("founders");
+  const [displayedTab, setDisplayedTab] = useState("founders"); // lags behind activeTab during the fade-out
+  const showcaseRef = useRef(null);
 
   const ecosystemData = {
     founders: {
@@ -15,7 +17,7 @@ export default function Protocol() {
       badge: "For Founders",
       description: "Transform your raw idea into an investor-ready powerhouse. Build an optimized profile, secure smart-vetted connections, and streamline your entire seed funding round seamlessly.",
       ctaText: "Pitch Your Startup",
-      href: "/register", // Founders-দের জন্য Startup Register/Pitch লিংক
+      href: "/register",
       icon: <Rocket className="h-5 w-5 text-violet-400" />,
       accentColor: "from-violet-600 to-indigo-600",
       glowColor: "bg-violet-500/10",
@@ -40,7 +42,7 @@ export default function Protocol() {
       badge: "For Capital Allocators",
       description: "Gain institutional-grade access to thoroughly vetted tech companies. Skip untargeted cold applications and utilize predictive algorithms to discover teams matching your criteria.",
       ctaText: "Request Allocation",
-      href: "/opportunities", // Investors-দের জন্য Deals/Opportunities লিংক
+      href: "/opportunities",
       icon: <Target className="h-5 w-5 text-fuchsia-400" />,
       accentColor: "from-fuchsia-600 to-pink-600",
       glowColor: "bg-fuchsia-500/10",
@@ -60,7 +62,7 @@ export default function Protocol() {
       badge: "For Operators & Talents",
       description: "Align your professional expertise with pre-vetted founding entities. Secure equity stakes, work on groundbreaking solutions, and become an integral core team member from day one.",
       ctaText: "Browse Opportunities",
-      href: "/opportunities", // Collaborators-দের জন্য Opportunities লিংক
+      href: "/opportunities",
       icon: <Person className="h-5 w-5 text-cyan-400" />,
       accentColor: "from-cyan-600 to-blue-600",
       glowColor: "bg-cyan-500/10",
@@ -81,7 +83,7 @@ export default function Protocol() {
 
   const tabKeys = Object.keys(ecosystemData);
 
-  // Auto-switch tabs every 3 seconds (3000ms)
+  // Auto-switch tabs every 3 seconds
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveTab((prev) => {
@@ -94,6 +96,30 @@ export default function Protocol() {
     return () => clearInterval(timer);
   }, [activeTab]);
 
+  // Smooth crossfade: fade the current card out, swap its content, then fade the new one in.
+  useEffect(() => {
+    if (!showcaseRef.current) return;
+    if (activeTab === displayedTab) return;
+
+    const el = showcaseRef.current;
+    const tl = gsap.timeline();
+
+    tl.to(el, {
+      opacity: 0,
+      y: -12,
+      scale: 0.97,
+      duration: 0.25,
+      ease: "power2.in",
+      onComplete: () => setDisplayedTab(activeTab),
+    }).fromTo(
+      el,
+      { opacity: 0, y: 12, scale: 0.97 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "power2.out" }
+    );
+
+    return () => tl.kill();
+  }, [activeTab]);
+
   return (
     <section className="w-full bg-[#07070a] pb-24 md:pt-10 pt-4 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Background radial glow matching brand colors */}
@@ -101,7 +127,7 @@ export default function Protocol() {
       <div className="absolute bottom-12 right-1/4 -z-10 h-[400px] w-[400px] rounded-full bg-indigo-600/5 blur-[130px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        
+
         {/* Header Structure */}
         <div className="max-w-3xl space-y-4 mb-6">
           <h2 className="text-xs font-bold tracking-widest text-violet-400 uppercase">
@@ -114,7 +140,7 @@ export default function Protocol() {
 
         {/* Asymmetric Split Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
+
           {/* Left Column: Custom Interactive Tab Controllers */}
           <div className="lg:col-span-5 space-y-4">
             {tabKeys.map((key) => {
@@ -126,16 +152,13 @@ export default function Protocol() {
                   key={key}
                   onClick={() => setActiveTab(key)}
                   className={`w-full text-left p-5 rounded-2xl border transition-all duration-300 flex items-center gap-5 relative group overflow-hidden ${
-                    isSelected 
-                      ? "bg-[#0d0d14]/80 border-violet-500/30 shadow-xl shadow-purple-950/20" 
+                    isSelected
+                      ? "bg-[#0d0d14]/80 border-violet-500/30 shadow-xl shadow-purple-950/20"
                       : "bg-transparent border-white/5 hover:border-white/10 hover:bg-[#0d0d14]/30"
                   }`}
                 >
                   {isSelected && (
-                    <motion.div 
-                      layoutId="activeGlow" 
-                      className="absolute inset-0 bg-gradient-to-r from-violet-500/5 to-transparent pointer-events-none"
-                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-violet-500/5 to-transparent pointer-events-none" />
                   )}
 
                   <div className={`p-3 rounded-xl transition-transform duration-300 ${
@@ -161,49 +184,44 @@ export default function Protocol() {
 
           {/* Right Column: Live Interactive Dynamic Showcase Display */}
           <div className="lg:col-span-7 h-[420px] relative flex items-center justify-center">
-            
+
             <div className="absolute inset-0 border border-dashed border-white/5 rounded-[2.5rem] p-4 flex items-center justify-center">
               <div className="absolute inset-4 border border-white/5 rounded-[2rem] bg-[#09090f]/50 backdrop-blur-xl" />
             </div>
 
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeTab}
-                initial={{ opacity: 0, scale: 0.95, y: 15 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: -15 }}
-                transition={{ duration: 0.35, ease: "easeOut" }}
-                className="w-full max-w-lg p-8 space-y-6 relative z-10 text-left"
-              >
-                <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full blur-3xl opacity-30 pointer-events-none -z-10 bg-gradient-to-br ${ecosystemData[activeTab].accentColor}`} />
+            {/* Note: no `key` here — same DOM node stays mounted so GSAP can crossfade it smoothly. */}
+            <div
+              ref={showcaseRef}
+              className="w-full max-w-lg p-8 space-y-6 relative z-10 text-left"
+            >
+              <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full blur-3xl opacity-30 pointer-events-none -z-10 bg-gradient-to-br ${ecosystemData[displayedTab].accentColor}`} />
 
-                <div className="space-y-3">
-                  <h3 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
-                    {ecosystemData[activeTab].title}
-                  </h3>
-                  <p className="text-sm text-gray-400 leading-relaxed">
-                    {ecosystemData[activeTab].description}
-                  </p>
-                </div>
+              <div className="space-y-3">
+                <h3 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+                  {ecosystemData[displayedTab].title}
+                </h3>
+                <p className="text-sm text-gray-400 leading-relaxed">
+                  {ecosystemData[displayedTab].description}
+                </p>
+              </div>
 
-                <div className="p-5 rounded-2xl border border-white/10 bg-[#0d0d14]/90 shadow-2xl backdrop-blur-md">
-                  {ecosystemData[activeTab].previewCard}
-                </div>
+              <div className="p-5 rounded-2xl border border-white/10 bg-[#0d0d14]/90 shadow-2xl backdrop-blur-md">
+                {ecosystemData[displayedTab].previewCard}
+              </div>
 
-                {/* Primary Integrated Action Button With Next.js Link */}
-                <div className="pt-2">
-                  <Button
-                    as={Link}
-                    href={ecosystemData[activeTab].href}
-                    size="lg"
-                    className={`h-11 px-6 rounded-xl font-bold text-sm text-white bg-gradient-to-r shadow-lg shadow-purple-500/10 ${ecosystemData[activeTab].accentColor}`}
-                    endContent={<ArrowRight className="h-4 w-4" />}
-                  >
-                    {ecosystemData[activeTab].ctaText}
-                  </Button>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+              {/* Primary Integrated Action Button With Next.js Link */}
+              <div className="pt-2">
+                <Button
+                  as={Link}
+                  href={ecosystemData[displayedTab].href}
+                  size="lg"
+                  className={`h-11 px-6 rounded-xl font-bold text-sm text-white bg-gradient-to-r shadow-lg shadow-purple-500/10 ${ecosystemData[displayedTab].accentColor}`}
+                  endContent={<ArrowRight className="h-4 w-4" />}
+                >
+                  {ecosystemData[displayedTab].ctaText}
+                </Button>
+              </div>
+            </div>
 
           </div>
 
