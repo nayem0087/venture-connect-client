@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@heroui/react";
 import { Rocket, Person, Target, ShieldCheck, ArrowRight } from "@gravity-ui/icons";
@@ -14,6 +15,7 @@ export default function Protocol() {
       badge: "For Founders",
       description: "Transform your raw idea into an investor-ready powerhouse. Build an optimized profile, secure smart-vetted connections, and streamline your entire seed funding round seamlessly.",
       ctaText: "Pitch Your Startup",
+      href: "/register", // Founders-দের জন্য Startup Register/Pitch লিংক
       icon: <Rocket className="h-5 w-5 text-violet-400" />,
       accentColor: "from-violet-600 to-indigo-600",
       glowColor: "bg-violet-500/10",
@@ -38,6 +40,7 @@ export default function Protocol() {
       badge: "For Capital Allocators",
       description: "Gain institutional-grade access to thoroughly vetted tech companies. Skip untargeted cold applications and utilize predictive algorithms to discover teams matching your criteria.",
       ctaText: "Request Allocation",
+      href: "/opportunities", // Investors-দের জন্য Deals/Opportunities লিংক
       icon: <Target className="h-5 w-5 text-fuchsia-400" />,
       accentColor: "from-fuchsia-600 to-pink-600",
       glowColor: "bg-fuchsia-500/10",
@@ -57,6 +60,7 @@ export default function Protocol() {
       badge: "For Operators & Talents",
       description: "Align your professional expertise with pre-vetted founding entities. Secure equity stakes, work on groundbreaking solutions, and become an integral core team member from day one.",
       ctaText: "Browse Opportunities",
+      href: "/opportunities", // Collaborators-দের জন্য Opportunities লিংক
       icon: <Person className="h-5 w-5 text-cyan-400" />,
       accentColor: "from-cyan-600 to-blue-600",
       glowColor: "bg-cyan-500/10",
@@ -74,6 +78,21 @@ export default function Protocol() {
       )
     }
   };
+
+  const tabKeys = Object.keys(ecosystemData);
+
+  // Auto-switch tabs every 3 seconds (3000ms)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveTab((prev) => {
+        const currentIndex = tabKeys.indexOf(prev);
+        const nextIndex = (currentIndex + 1) % tabKeys.length;
+        return tabKeys[nextIndex];
+      });
+    }, 3000);
+
+    return () => clearInterval(timer);
+  }, [activeTab]);
 
   return (
     <section className="w-full bg-[#07070a] pb-24 md:pt-10 pt-4 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
@@ -98,7 +117,7 @@ export default function Protocol() {
           
           {/* Left Column: Custom Interactive Tab Controllers */}
           <div className="lg:col-span-5 space-y-4">
-            {Object.keys(ecosystemData).map((key) => {
+            {tabKeys.map((key) => {
               const item = ecosystemData[key];
               const isSelected = activeTab === key;
 
@@ -112,7 +131,6 @@ export default function Protocol() {
                       : "bg-transparent border-white/5 hover:border-white/10 hover:bg-[#0d0d14]/30"
                   }`}
                 >
-                  {/* Subtle active background sliding indicator placeholder */}
                   {isSelected && (
                     <motion.div 
                       layoutId="activeGlow" 
@@ -144,7 +162,6 @@ export default function Protocol() {
           {/* Right Column: Live Interactive Dynamic Showcase Display */}
           <div className="lg:col-span-7 h-[420px] relative flex items-center justify-center">
             
-            {/* Outer Abstract Graphic Border Container */}
             <div className="absolute inset-0 border border-dashed border-white/5 rounded-[2.5rem] p-4 flex items-center justify-center">
               <div className="absolute inset-4 border border-white/5 rounded-[2rem] bg-[#09090f]/50 backdrop-blur-xl" />
             </div>
@@ -158,7 +175,6 @@ export default function Protocol() {
                 transition={{ duration: 0.35, ease: "easeOut" }}
                 className="w-full max-w-lg p-8 space-y-6 relative z-10 text-left"
               >
-                {/* Floating ambient asset glow behind active visualization card */}
                 <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full blur-3xl opacity-30 pointer-events-none -z-10 bg-gradient-to-br ${ecosystemData[activeTab].accentColor}`} />
 
                 <div className="space-y-3">
@@ -170,14 +186,15 @@ export default function Protocol() {
                   </p>
                 </div>
 
-                {/* Simulated Dynamic Application UI Card Panel */}
                 <div className="p-5 rounded-2xl border border-white/10 bg-[#0d0d14]/90 shadow-2xl backdrop-blur-md">
                   {ecosystemData[activeTab].previewCard}
                 </div>
 
-                {/* Primary Integrated Action Trigger */}
+                {/* Primary Integrated Action Button With Next.js Link */}
                 <div className="pt-2">
                   <Button
+                    as={Link}
+                    href={ecosystemData[activeTab].href}
                     size="lg"
                     className={`h-11 px-6 rounded-xl font-bold text-sm text-white bg-gradient-to-r shadow-lg shadow-purple-500/10 ${ecosystemData[activeTab].accentColor}`}
                     endContent={<ArrowRight className="h-4 w-4" />}
